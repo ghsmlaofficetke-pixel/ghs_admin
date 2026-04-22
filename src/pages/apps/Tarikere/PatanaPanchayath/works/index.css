@@ -1,0 +1,22 @@
+.page-break-table {
+  page-break-inside: auto;
+}
+
+.page-break-table tr {
+  page-break-inside: avoid !important;
+  page-break-after: auto;
+}
+
+.page-break-table td,
+.page-break-table th {
+  page-break-inside: avoid !important;
+}
+
+/* 🔥 VERY IMPORTANT */
+thead {
+  display: table-header-group;
+}
+
+tfoot {
+  display: table-footer-group;
+}

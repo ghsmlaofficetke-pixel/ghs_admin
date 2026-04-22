@@ -1,0 +1,88 @@
+.tp-wrapper {
+  width: 720px;        /* SAFE WIDTH FOR A4 */
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  box-sizing: border-box;
+  font-family: "Times New Roman", serif;
+}
+
+/* Header */
+.tp-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.tp-header h1 {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.tp-header p {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* Table */
+.tp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tp-table th,
+.tp-table td {
+  border: 1px solid rgb(92, 90, 90);
+  padding: 6px;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.tp-table th {
+  background: #dbeafe;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Date cell */
+.date-cell {
+  text-align: center;
+  font-weight: 600;
+}
+
+.weekday {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* Footer */
+.tp-footer {
+  margin-top: 40px;
+  text-align: right;
+  font-size: 13px;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+/* ===== PDF PAGE BREAK FIX ===== */
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+table {
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+.break-avoid {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}

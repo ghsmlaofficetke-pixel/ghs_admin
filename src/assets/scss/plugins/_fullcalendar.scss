@@ -1,0 +1,174 @@
+//
+// calendar.scss (UPDATED)
+//
+
+/* ===== GENERAL ===== */
+.fc-view {
+  margin-top: 16px;
+}
+
+/* ===== TOOLBAR ===== */
+.fc-toolbar {
+  margin: 6px 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap !important;
+  gap: 8px;
+}
+
+/* Title: JANUARY 2026 */
+.fc-toolbar-title {
+  font-size: 0.65rem !important; /* mobile */
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .fc-toolbar-title {
+    font-size: 0.8rem !important; /* desktop */
+  }
+}
+
+/* Toolbar chunks in ONE LINE */
+.fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.fc .fc-button {
+  padding: 4px 8px !important;
+  font-size: 0.7rem !important;
+  line-height: 1;
+}
+
+/* ===== REMOVE MOBILE STACKING ===== */
+@screen md {
+  .fc-toolbar {
+    flex-wrap: nowrap !important;
+  }
+
+  .fc-left,
+  .fc-center,
+  .fc-right {
+    float: none !important;
+    display: flex !important;
+    margin: 0 !important;
+  }
+}
+
+/* ===== DAY HEADER (Sun Mon Tue...) ===== */
+.fc {
+  th.fc-widget-header {
+    @apply bg-gray-100 font-semibold;
+    font-size: 11px;
+    padding: 6px 0;
+    text-transform: uppercase;
+  }
+}
+
+@media (min-width: 640px) {
+  .fc th.fc-widget-header {
+    font-size: 13px;
+    padding: 10px 0;
+  }
+}
+
+th.fc-day-header {
+  padding: 4px 0;
+}
+
+/* ===== DAY CELL ===== */
+.fc-day {
+  background: transparent;
+}
+
+.fc-daygrid-day-number {
+  font-size: 0.7rem;
+}
+
+@media (min-width: 640px) {
+  .fc-daygrid-day-number {
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== EVENTS ===== */
+.fc-event {
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  margin: 4px;
+  padding: 4px;
+  text-align: center;
+  @apply text-white;
+}
+
+@media (min-width: 640px) {
+  .fc-event {
+    font-size: 0.8rem;
+  }
+}
+
+.fc-daygrid .fc-event-time,
+.fc-daygrid .fc-event-title {
+  color: #ffffff !important;
+}
+
+/* ===== LIST VIEW EVENTS (BLACK) ===== */
+.fc-list .fc-list-event-title,
+.fc-list .fc-list-event-title a,
+.fc-list .fc-list-event-time {
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+/* ===== ACTIVE BUTTON ===== */
+.fc-state-down,
+.fc-state-active,
+.fc-state-disabled {
+  @apply bg-primary text-white;
+  text-shadow: none;
+}
+
+/* ===== LIST VIEW TEXT COLOR FIX ===== */
+/* ===== LIST VIEW EVENT TITLE COLOR FIX ===== */
+.fc .fc-list-event-title a {
+  color: #000 !important;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.fc .fc-list-event-time {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+/* ===== BORDERS ===== */
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard td,
+.fc-theme-standard th {
+  @apply border border-solid border-gray-200 dark:border-gray-700;
+}
+
+/* ===== FORCE FULL WIDTH (IMPORTANT) ===== */
+.fc,
+.fc-view-harness,
+.fc-view-harness-active,
+.fc-scrollgrid,
+.fc-scrollgrid-section-body table,
+.fc-scrollgrid-section-footer table {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* ===== PREVENT HORIZONTAL SCROLL ===== */
+.fc-scroller {
+  overflow-x: hidden !important;
+}
