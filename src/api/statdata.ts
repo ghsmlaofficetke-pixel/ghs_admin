@@ -148,7 +148,7 @@ export const createStatdata =
   (payload: Statdata) => async (dispatch: AppDispatch) => {
     dispatch(start());
     try {
-      console.log("CREATE PAYLOAD:", payload);
+      
 
       await axios.post(`${API_URL}/statdata`, payload, getAuthConfig());
 
@@ -157,7 +157,6 @@ export const createStatdata =
       // ✅ correct refresh
       dispatch(fetchDataByGroup(payload.group));
     } catch (err: any) {
-      console.log("CREATE ERROR:", err?.response);
       dispatch(failure());
       toast.error(err?.response?.data?.message || "Create failed");
     }
@@ -199,7 +198,6 @@ export const deleteStatdata =
 
       dispatch(fetchDataByGroup(group));
     } catch (err: any) {
-      console.log("DELETE ERROR:", err?.response);
       dispatch(failure());
       toast.error(err?.response?.data?.message || "Delete failed");
     }

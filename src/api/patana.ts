@@ -120,8 +120,6 @@ export const fetchAllpatana = () => async (dispatch: AppDispatch) => {
   dispatch(patanaStart());
   try {
     const res = await axios.get(`${API_URL}/patana`, getAuthConfig());
-
-    console.log(res.data);
     dispatch(getAllpatanaSuccess(res.data.data || res.data));
   } catch (err: any) {
     dispatch(patanaFailure());

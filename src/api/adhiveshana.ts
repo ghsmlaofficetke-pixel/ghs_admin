@@ -113,9 +113,6 @@ export const fetchAllAdhiveshana = () => async (dispatch: AppDispatch) => {
       `${API_URL}/adhiveshana`,
       getAuthConfig()
     );
-
-    console.log(res)
-
     dispatch(getAllSuccess(res.data.data || res.data));
   } catch (err: any) {
     dispatch(failure());

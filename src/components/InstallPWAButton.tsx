@@ -11,16 +11,24 @@ export default function InstallPWAButton() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // 🔹 Check if already running as installed app
+    // 🔹 1. Check localStorage (MAIN FIX)
+    const installed = localStorage.getItem("pwaInstalled");
+    if (installed === "true") {
+      setIsInstalled(true);
+      return;
+    }
+
+    // 🔹 2. Detect standalone mode
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true;
 
     if (isStandalone) {
       setIsInstalled(true);
+      localStorage.setItem("pwaInstalled", "true");
     }
 
-    // 🔹 Listen for install event
+    // 🔹 3. Listen for install prompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -28,20 +36,24 @@ export default function InstallPWAButton() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // 🔹 When app installed
-    window.addEventListener("appinstalled", () => {
+    // 🔹 4. Listen for successful install
+    const installedHandler = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-    });
+      localStorage.setItem("pwaInstalled", "true"); // 🔥 important
+    };
+
+    window.addEventListener("appinstalled", installedHandler);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", installedHandler);
     };
   }, []);
 
   const installApp = async () => {
     if (!deferredPrompt) {
-      alert("Install not available in this browser.");
+      alert("Install option not available in this browser.");
       return;
     }
 
@@ -50,21 +62,22 @@ export default function InstallPWAButton() {
 
     if (choiceResult.outcome === "accepted") {
       setIsInstalled(true);
+      localStorage.setItem("pwaInstalled", "true"); // 🔥 important
     }
 
     setDeferredPrompt(null);
   };
 
-  // 🔹 Hide button if installed OR no install event available
+  // 🔹 Hide button if already installed OR not available
   if (isInstalled || !deferredPrompt) return null;
 
   return (
-    <div className="fixed bottom-5 md:right-15 right-10 z-50">
+    <div className="fixed bottom-5 md:right-15 right-5 z-50">
       <button
         onClick={installApp}
-        className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-xl hover:scale-105 transition"
+        className="bg-blue-600 text-white px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition text-sm md:text-base"
       >
-        Install App
+        📲 Install App
       </button>
     </div>
   );

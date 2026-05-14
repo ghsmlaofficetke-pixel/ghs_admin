@@ -70,7 +70,7 @@ const TodayTPBanner = ({
   return (
     <div className="w-full">
       {/* ===== TITLE ===== */}
-      <div className="text-center text-lg sm:text-[18px] font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-red-500 mb-2">
+      <div className="text-center  sm:text-[16px] text-[14px] font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-red-500 mb-2">
         ಶಾಸಕರ ದೈನಂದಿನ ಕಾರ್ಯಕಲಾಪಗಳು
       </div>
 

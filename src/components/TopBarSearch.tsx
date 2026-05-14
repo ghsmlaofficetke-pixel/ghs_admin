@@ -11,7 +11,6 @@ const TopBarSearch = () => {
 
   
   const ref: React.RefObject<HTMLDivElement> = useRef(null);
-  // console.log(ref.current?.children[0].classList.remove('hidden'))
 
   if (isModalOpen) {
     ref.current?.children[0].classList.remove('hidden')

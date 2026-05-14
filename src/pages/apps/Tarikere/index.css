@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════
+   FONT
+═══════════════════════════════════════════════════════════ */
+#community-pdf-area *,
+#individual-pdf-area *,
+#manavi-pdf-area * {
+  font-family: 'NotoKannada', sans-serif !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ROOT WRAPPER  ← height:auto so it grows with content
+═══════════════════════════════════════════════════════════ */
+.cw-root {
+  display: flex;
+  flex-direction: column;
+  height: auto;          /* ← was 100%, caused zero-height collapse */
+  min-height: 0;
+  gap: 8px;
+  padding: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════════ */
+.cw-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 2px 2px;
+}
+
+.cw-title {
+  flex: 1 1 100%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+  .cw-title { flex: 1 1 auto; font-size: 14px; }
+}
+
+.cw-title-village {
+  color: #2466d1;
+  font-weight: 700;
+}
+
+/* Search */
+.cw-search { flex: 1 1 100%; }
+.cw-search input { width: 100% !important; }
+
+@media (min-width: 640px) {
+  .cw-search { flex: 0 0 220px; }
+  .cw-search input { width: 220px !important; }
+}
+
+/* Action buttons */
+.cw-actions {
+  flex: 1 1 100%;
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.cw-actions .btn { flex: 1; justify-content: center; }
+
+@media (min-width: 640px) {
+  .cw-actions { flex: 0 0 auto; }
+  .cw-actions .btn { flex: 0 0 auto; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABLE CONTAINER  ← also auto height
+═══════════════════════════════════════════════════════════ */
+.cw-table-container {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL WRAPPER  ← fixed max-height so it scrolls
+═══════════════════════════════════════════════════════════ */
+.cw-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+ max-height: 440px;    /* ← fixed height, table scrolls inside */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  scrollbar-width: thin;
+  scrollbar-color: #c5c5c5 transparent;
+}
+
+.cw-scroll-wrap::-webkit-scrollbar { height: 6px; width: 6px; }
+.cw-scroll-wrap::-webkit-scrollbar-track { background: transparent; }
+.cw-scroll-wrap::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 4px; }
+
+.pdf-mode {
+  overflow: visible;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PDF HEADER TITLE
+═══════════════════════════════════════════════════════════ */
+.pdf-title {
+  text-align: center;
+  margin-bottom: 14px;
+  padding: 10px 12px 12px;
+  border-bottom: 2.5px solid #2560d8;
+  background: linear-gradient(135deg, #eef4ff 0%, #ffffff 100%);
+}
+.pdf-title h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; color: #1a3d7c; }
+.pdf-title p  { font-size: 10.5px; margin: 0; color: #4b5563; }
+
+/* ═══════════════════════════════════════════════════════════
+   PDF LOADER OVERLAY
+═══════════════════════════════════════════════════════════ */
+.pdf-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(4px);
+}
+.pdf-loader-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid #dbeafe;
+  border-top-color: #2560d8;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+.pdf-loader-text { font-size: 14px; font-weight: 600; color: #1a3d7c; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════
+   TABLE
+═══════════════════════════════════════════════════════════ */
+.page-break-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  page-break-inside: auto;
+  min-width: 860px;
+}
+
+.page-break-table th,
+.page-break-table td {
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #000000;
+  vertical-align: middle;
+  overflow: visible;
+  word-break: break-word;
+  white-space: normal;
+  page-break-inside: avoid !important;
+}
+
+.page-break-table thead { display: table-header-group; }
+
+.page-break-table thead th {
+  background: linear-gradient(180deg, #06b6d4 0%, #2466d1 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  padding: 9px 6px;
+  vertical-align: middle;
+  line-height: 1.35;
+  border-color: rgba(255,255,255,0.22);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page-break-table thead th:first-child,
+.page-break-table tbody td:first-child {
+  width: 44px; min-width: 44px; max-width: 44px; text-align: center;
+}
+.page-break-table tbody td:first-child {
+  font-weight: 700; color: #1a3d7c; padding: 7px 4px;
+}
+
+.page-break-table tbody tr {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  page-break-after: auto;
+}
+
+@media screen {
+  .page-break-table tbody tr:hover {
+    background-color: #ddeeff !important;
+    transition: background 0.12s;
+  }
+}
+
+.page-break-table tbody td {
+  padding: 7px 8px;
+  color: #000000;
+  font-size: 13px;
+  line-height: 1.55;
+  vertical-align: middle;
+  border-color: #d1d5db;
+}
+
+.page-break-table tbody td.action-cell {
+  text-align: center; padding: 6px 4px; width: 72px; min-width: 72px;
+}
+
+.table-empty-row td {
+  text-align: center; padding: 40px 0; color: #9ca3af; font-size: 13px;
+}
+
+tfoot { display: table-footer-group; }
+
+/* ═══════════════════════════════════════════════════════════
+   SEARCH INPUT
+═══════════════════════════════════════════════════════════ */
+.search-wrap { position: relative; }
+
+.search-wrap svg {
+  position: absolute; left: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af; font-size: 12px; pointer-events: none;
+}
+
+.search-wrap input {
+  padding: 7px 10px 7px 32px;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background: #fff;
+}
+
+.search-wrap input:focus {
+  border-color: #3a7df5;
+  box-shadow: 0 0 0 3px rgba(58,125,245,0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 6px;
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-excel { background: #16a34a; color: #fff; }
+.btn-excel:hover:not(:disabled) { background: #15803d; box-shadow: 0 2px 6px rgba(22,163,74,0.3); }
+.btn-pdf   { background: #dc2626; color: #fff; }
+.btn-pdf:hover:not(:disabled)   { background: #b91c1c; box-shadow: 0 2px 6px rgba(220,38,38,0.3); }
+.btn-add   { background: linear-gradient(135deg, #2466d1, #06b6d4); color: #fff; }
+.btn-add:hover { opacity: 0.88; box-shadow: 0 2px 8px rgba(36,102,209,0.35); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════════════
+   PAGINATION
+═══════════════════════════════════════════════════════════ */
+.pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 4px 0; flex-wrap: wrap;
+}
+.pagination button {
+  padding: 5px 14px; border: 1px solid #d1d5db; border-radius: 6px;
+  font-size: 12px; background: #fff; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.pagination button:hover:not(:disabled) { background: #eff6ff; border-color: #3a7df5; color: #1a3d7c; }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination .page-info { font-size: 12px; color: #374151; font-weight: 600; min-width: 64px; text-align: center; }
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT SAFETY
+═══════════════════════════════════════════════════════════ */
+@media print {
+  html, body { height: auto !important; margin: 0 !important; }
+  .cw-scroll-wrap { overflow: visible !important; max-height: none !important; }
+  .page-break-table thead th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}

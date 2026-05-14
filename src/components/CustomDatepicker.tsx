@@ -17,7 +17,7 @@ interface DatePickerInputProps {
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   (props, ref) => {
     const onDateValueChange = () => {
-      console.log("date value changed");
+      
     }
     return (
       <input

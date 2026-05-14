@@ -96,8 +96,6 @@ const BannerPreviewModal = ({ open, onClose, tpForDate, activeDate }: Props) => 
   const [posterMode, setPosterMode] = useState<PosterMode>("blue");
   if (!open || !tpForDate || !tpForDate.events.length) return null;
 
-
-  console.log(activeDate)
 const sortedEvents = [...tpForDate.events].sort(
   (a, b) => convertTimeToMinutes(a.time) - convertTimeToMinutes(b.time)
 );
@@ -135,9 +133,6 @@ const dateObj = new Date(year, monthNumber, dateDay);
 // 4️⃣ Get the weekday in Kannada
 const weekDayKannada = dateObj.toLocaleDateString("kn-IN", { weekday: "long" });
 
-console.log("Weekday:", weekDayKannada); // e.g., ಬುಧವಾರ
-console.log("Month:", monthKannada);     // e.g., ಜನವರಿ
-console.log("Day:", dateDay);  
 
   /* ================= SLIDE CONTROL ================= */
   const scrollToPage = (index: number) => {
@@ -247,7 +242,7 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
                     </div>
 
                     <div className="flex-1 text-center px-4">
-                      <div className={`text-[18px] font-black ${theme.titleText}`}>
+                      <div className={`text-[16px] font-black ${theme.titleText}`}>
                         ಶಾಸಕರ ದೈನಂದಿನ ಕಾರ್ಯಕಲಾಪಗಳು
                       </div>
                       <div className="text-[14px] font-bold text-indigo-900 mt-1">

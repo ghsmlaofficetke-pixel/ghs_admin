@@ -3,6 +3,14 @@
 //
 
 // Sidenav Menu
+
+@font-face {
+  font-family: 'Nudi';
+  src: url('../../fonts/Nudi\ 16\ e\ Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .app-menu {
     width: $sidenav-width;
     min-width: $sidenav-width;
@@ -110,7 +118,8 @@ html[data-menu-color="gradient"] {
             >.menu-text {
                 font-size: $menu-item-font-size;
                 line-height: $menu-item-font-size;
-                font-weight: 600;
+                font-weight: 700;
+                //  font-family: 'Nudi', 'Noto Sans Kannada', sans-serif !important;
                 @apply whitespace-nowrap transition-all;
             }
 

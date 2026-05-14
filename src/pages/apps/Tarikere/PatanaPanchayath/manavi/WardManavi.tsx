@@ -25,7 +25,6 @@ import AddEditWardManaviModal from "./AddEditWardManavi";
 
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import html2pdf from "html2pdf.js";
 
 /* DELETE MODAL */
 
@@ -185,7 +184,7 @@ export default function WardManavi() {
 
     setIsPdf(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const opt = {
         margin: 10,
         filename: `${ward?.name || "Ward"}_ಮನವಿ_List.pdf`,
@@ -194,6 +193,9 @@ export default function WardManavi() {
         jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
         pagebreak: { mode: ["avoid-all", "css", "legacy"],},
       };
+    const h2p = await import("html2pdf.js");
+    const html2pdf = (h2p as any).default ?? h2p;
+
 
       (html2pdf() as any)
         .set(opt)
@@ -295,9 +297,9 @@ export default function WardManavi() {
   }`}
 >
 
-  <table className="min-w-full border text-sm page-break-table">
+  <table className="min-w-full  border-[#969696] text-sm page-break-table">
 
-    <thead className="bg-gray-100 sticky top-0 z-10">
+    <thead className="bg-gradient-to-r from-[#2466d1] to-cyan-500 text-white sticky top-0 z-10">
 
               <tr>
                 <th className="border p-2">ಕ್ರಮ ಸಂಖ್ಯೆ</th>
@@ -331,18 +333,18 @@ export default function WardManavi() {
 
                 displayData.map((m:any,index:number)=>(
 
-                  <tr key={m._id}>
+                  <tr key={m._id} className="text-[#0D0D0D]">
 
-                    <td className="border p-2 text-center">
+                    <td className="border border-[#969696] p-2 text-center">
                       {isPdf
                         ? index+1
                         : (page-1)*pageSize + index + 1}
                     </td>
 
-                    <td className="border p-2">{formatDate(m.createdAt)}</td>
+                    <td className="border border-[#969696] p-2">{formatDate(m.createdAt)}</td>
 
         {/* ✅ TYPE */}
-        <td className="border p-2 font-medium">
+        <td className="border border-[#969696] p-2 font-medium">
           {m.type || "-"}
         </td>
 

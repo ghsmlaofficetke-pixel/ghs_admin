@@ -255,12 +255,7 @@ export const fetchConsolidatedManavi =
       }
 
       const url = `${API_URL}/manavi/consolidated?${query.toString()}`;
-
-      console.log("🚀 API URL 👉", url);
-
       const res = await axios.get(url, getAuthConfig());
-
-      console.log("✅ RESPONSE 👉", res.data);
 
       dispatch(getConsolidatedSuccess(res.data));
 

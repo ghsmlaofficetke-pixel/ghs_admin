@@ -40,8 +40,6 @@ const Login = () => {
 
   const { error } = useSelector((state: any) => state.Auth);
 
-  console.log(error)
-
   const redirectUrl = location?.search?.slice(6) || "/";
   // const redirectUrl = "/auth/launch";
 

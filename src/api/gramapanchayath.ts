@@ -107,7 +107,6 @@ export const fetchGramaPanchayaths =
     try {
       const res = await axios.get(`${API_URL}/grama-panchayaths/hobli/${hobliId}`, getAuthConfig());
       dispatch(getAllSuccess(res.data.data || res.data));
-      console.log(res)
     } catch (err: any) {
       dispatch(failure());
       toast.error(err?.response?.data?.message || "Failed to load Grama Panchayaths");

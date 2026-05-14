@@ -137,11 +137,11 @@ const LeftSideBar = ({ isCondensed }: LeftSideBarProps) => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-80 p-6">
 
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-              Confirm Logout
+             ಲಾಗ್ ಔಟ್ ದೃಢೀಕರಿಸಿ
             </h3>
 
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              Are you sure you want to logout?
+              ನೀವು ಖಚಿತವಾಗಿ ಲಾಗ್ ಔಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ?
             </p>
 
             <div className="flex justify-end gap-3">

@@ -57,7 +57,6 @@ export default function GovtOfficeEditModal({
 
     onClose();
   } catch (err: any) {
-    console.log(err);
   }
 };
 

@@ -143,11 +143,11 @@ export const fetchConsolidatedWork =
 
       const url = `${API_URL}/workconsolidation/consolidated?${query.toString()}`;
 
-      console.log("🚀 WORK API 👉", url);
+      // console.log("🚀 WORK API 👉", url);
 
       const res = await axios.get(url, getAuthConfig());
 
-      console.log("✅ WORK RESPONSE 👉", res.data);
+      // console.log("✅ WORK RESPONSE 👉", res.data);
 
       dispatch(
         getConsolidatedSuccess({

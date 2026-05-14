@@ -395,7 +395,7 @@ const events: EventInput[] = useMemo(() => {
       />
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 w-full">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 w-full -m-3 h-[calc(100vh-170px)] overflow-y-auto overflow-x-hidden">
 
         {/* Left Panel */}
         <div className="card w-full shadow-sm">
@@ -521,7 +521,7 @@ const events: EventInput[] = useMemo(() => {
       <DeleteModal
         open={showDeleteModal}
         title="Delete Tour Program / ಪ್ರವಾಸ ಕಾರ್ಯಕ್ರಮ ಅಳಿಸುವಿಕೆ"
-        message="ಆಯ್ದ ಪ್ರವಾಸ ಕಾರ್ಯಕ್ರಮದ ಎಲ್ಲಾ ವಿವರಗಳು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತವೆ. ದಯವಿಟ್ಟು ಖಚಿತಪಡಿಸಿ."
+        message="ಆಯ್ದ ಪ್ರವಾಸ ಕಾರ್ಯಕ್ರಮದ ಎಲ್ಲಾಾ ವಿವರಗಳು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತವೆ. ದಯವಿಟ್ಟು ಖಚಿತಪಡಿಸಿ."
         onClose={cancelDelete}
         onConfirm={confirmDelete}
       />

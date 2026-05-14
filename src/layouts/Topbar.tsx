@@ -44,25 +44,6 @@ const notifications: NotificationItem[] = [
   },
 ]
 
-/**
- * profile menu items
- */
-// const profileMenus: ProfileMenuItem[] = [
-//   {
-//     label: 'Gallery',
-//     icon: 'mgc_pic_2_line me-2',
-//     redirectTo: '/',
-//   },
-//   {
-//     label: 'G H S',
-//     icon: 'mgc_task_2_line me-2',
-//     redirectTo: '/',
-//   },
-// ];
-
-/**
- * for subtraction minutes
- */
 function subtractHours(date: Date, minutes: number) {
   date.setMinutes(date.getMinutes() - minutes);
   return date;
@@ -144,7 +125,7 @@ const Topbar = () => {
 
   return (
     <>
-      <header className="app-header flex items-center px-4 gap-3 relative">
+      <header className="app-header flex items-center px-4 gap-3 relative ">
         {/* Left: Menu + Logo */}
         <div className="flex items-center gap-2">
           <button

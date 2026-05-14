@@ -121,7 +121,7 @@ export const createTp = (payload: TP) => async (dispatch: AppDispatch) => {
 
     
     );
-    console.log(payload)
+    
     toast.success("Today Plan created");
     dispatch(fetchAllTp());
   } catch (err: any) {

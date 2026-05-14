@@ -129,7 +129,7 @@ const portals: Portal[] = [
    {
     name: "ಪೋಲ್‌ಸ್ಟಾರ್",
     url: "https://ems.outvote.in",
-    description: "ತಾಲ್ಲೂಕಿನ ಎಲ್ಲಾ ಮತದಾರರ ಸಂಪೂರ್ಣ ವಿವರಗಳ ಮಾಹಿತಿ.",
+    description: "ತಾಲ್ಲೂಕಿನ ಎಲ್ಲಾಾ ಮತದಾರರ ಸಂಪೂರ್ಣ ವಿವರಗಳ ಮಾಹಿತಿ.",
     image:image15,
   },
 ];

@@ -30,7 +30,8 @@ function CustomDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const selected = options?.find((o) => o._id === value);
+ const safeOptions = Array.isArray(options) ? options : [];
+const selected = safeOptions.find((o) => o._id === value);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -124,6 +125,7 @@ export default function TarikereTownPanchayath() {
   const [openGP,      setOpenGP]      = useState<string | null>(null);
   const [search,   setSearch]   = useState("");
   const [results,  setResults]  = useState<any[]>([]);
+  const token = localStorage.getItem("token");
 
   const TALUK_ID_MAP: Record<string, string> = {
     tarikere: "697c608ce9a52546e447aa74",
@@ -169,14 +171,23 @@ export default function TarikereTownPanchayath() {
     const talukId = TALUK_ID_MAP[taluk.toLowerCase()];
     if (!talukId) return;
 
-    fetch(`${API_URL}/hoblis/panchayath/${talukId}`)
+    fetch(`${API_URL}/hoblis/panchayath/${talukId}`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
       .then((r) => r.json())
       .then((data) => {
-        // Stale-fetch guard — user may have already switched taluk again
-        if (loadedForTaluk.current !== taluk) return;
-        const list: { _id: string; name: string }[] = data?.data || data || [];
-        setHoblis(list);
-      })
+  if (loadedForTaluk.current !== taluk) return;
+
+  const list = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data)
+    ? data
+    : [];
+
+  setHoblis(list);
+})
       .catch(console.error);
   }, [taluk]); // dispatch / API_URL are stable, no need in deps
 
@@ -298,13 +309,30 @@ export default function TarikereTownPanchayath() {
 
   /* ================= GLOBAL VILLAGE SEARCH ================= */
 
-  const handleSearch = async (value: string) => {
-    setSearch(value);
-    if (value.length < 2) { setResults([]); return; }
-    const res = await fetch(`${API_URL}/villages/search?q=${value}`);
-    const data = await res.json();
-    // setResults(data.data || []);
-  };
+const handleSearch = async (value: string) => {
+  setSearch(value);
+
+  if (value.length < 2) {
+    setResults([]);
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_URL}/villages/search?q=${value}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+  setResults(Array.isArray(data.data) ? data.data : []);
+};
+
+  const clearSearch = () => {
+  setSearch("");
+  setResults([]);
+};
 
   /* ================= LABELS / DERIVED ================= */
 
@@ -463,14 +491,27 @@ export default function TarikereTownPanchayath() {
 
           {/* GLOBAL SEARCH — list pages only */}
           {level < 3 && (
-            <input
-              type="text"
-              placeholder="ಗ್ರಾಮ ಹುಡುಕಿ..."
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-28 sm:w-52 px-2.5 py-1.5 text-xs sm:text-sm border rounded-lg
-                focus:outline-none focus:ring-1 focus:ring-blue-300 flex-shrink-0"
-            />
+           <div className="relative">
+  <input
+    type="text"
+    placeholder="ಗ್ರಾಮ ಹುಡುಕಿ..."
+    value={search}
+    onChange={(e) => handleSearch(e.target.value)}
+    className="w-28 sm:w-52 px-2.5 py-1.5 pr-7 text-xs sm:text-sm border rounded-lg
+      focus:outline-none focus:ring-1 focus:ring-blue-300"
+  />
+
+  {/* ❌ CLEAR BUTTON */}
+  {search.length > 0 && (
+    <button
+      onClick={clearSearch}
+      className="absolute right-1 top-1/2 -translate-y-1/2
+        text-gray-400 hover:text-red-500 text-sm px-1"
+    >
+      ✕
+    </button>
+  )}
+</div>
           )}
 
           {/* TABS — village detail only */}
@@ -480,7 +521,7 @@ export default function TarikereTownPanchayath() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-2.5 py-1 rounded text-xs sm:text-sm whitespace-nowrap transition ${
+                  className={`px-2.5 py-1 sm:mr-8 rounded text-xs sm:text-sm whitespace-nowrap transition ${
                     activeTab === tab
                       ? "bg-gradient-to-r from-[#2466d1] to-cyan-500 text-white shadow"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -545,7 +586,7 @@ export default function TarikereTownPanchayath() {
 
         {/* ── Village Detail (level 3) ── */}
         {level === 3 && (
-          <div className="bg-white dark:bg-[#1f2a38] rounded-xl shadow">
+        <div className="bg-white dark:bg-[#1f2a38] rounded-xl shadow p-2">
             {activeTab === "manavi" && <VillageManavi />}
             {activeTab === "works" && <VillageWorks />}
           </div>

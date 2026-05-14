@@ -10,7 +10,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import html2pdf from "html2pdf.js";
 import './index.css'
 import { AppDispatch } from "../../../../../redux/store";
 
@@ -199,7 +198,7 @@ const { current: ward } = useSelector(wardSelector);
 
     setIsPdf(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
 
       const opt = {
         margin: 10,
@@ -223,6 +222,9 @@ const { current: ward } = useSelector(wardSelector);
            mode: ["avoid-all", "css", "legacy"],
         },
       };
+    const h2p = await import("html2pdf.js");
+    const html2pdf = (h2p as any).default ?? h2p;
+
 
       (html2pdf() as any)
         .from(element)
@@ -370,7 +372,7 @@ const { current: ward } = useSelector(wardSelector);
 
               {displayData?.map((w: any, i: number) => (
 
-                <tr key={w._id}>
+                <tr key={w._id} className="text-[#0D0D0D]">
 
                   <td className="border p-2 text-center">
                     {isPdf

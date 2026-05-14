@@ -52,7 +52,7 @@ const ModalLayout = ({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`w-full max-w-lg md:max-w-2xl 
+                className={`w-full max-w-lg md:max-w-3xl 
                   rounded-lg bg-white dark:bg-gray-900 
                   overflow-y-auto max-h-[90vh] 
                   shadow-lg transform transition-all ${panelClassName}`}

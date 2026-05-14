@@ -150,8 +150,6 @@ export const fetchAllMainSchemData =
         `${API_URL}/schemdata/mainschem/${schemId}`,
         getAuthConfig()
       );
-
-      console.log(res)
       // ✅ FIXED
       dispatch(getMainDataSuccess(res.data.data || res.data));
     } catch (err: any) {

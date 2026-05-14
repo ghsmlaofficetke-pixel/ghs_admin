@@ -63,3 +63,12 @@ File: Main Css File
 
 // App Pages Plugins
 @import "plugins/fullcalendar";
+
+
+.app-header {
+  padding-top: env(safe-area-inset-top);
+}
+
+.page-content {
+  padding-bottom: calc(env(safe-area-inset-bottom)); // 80px = mobile footer height
+}

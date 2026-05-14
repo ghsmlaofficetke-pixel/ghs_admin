@@ -153,7 +153,6 @@ export const updateWard =
   (id: string, payload: Ward) => async (dispatch: AppDispatch) => {
     dispatch(start());
 
-    console.log(payload)
     try {
       await axios.put(`${API_URL}/ward/${id}`,payload,getAuthConfig());
       toast.success("Ward updated successfully");

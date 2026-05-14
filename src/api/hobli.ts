@@ -117,10 +117,13 @@ export const fetchAllPanchayathHoblis =
       );
       dispatch(getAllHobliSuccess(res.data.data || res.data)); // depends on API shape
 
-      console.log(res.data.data)
     } catch (err: any) {
       dispatch(hobliFailure());
-      toast.error(err?.response?.data?.message || "Failed to load Hoblis");
+      toast.error(
+  typeof err?.response?.data?.message === "string"
+    ? err.response.data.message
+    : "Failed to load Hoblis"
+);
     }
   };
 
@@ -130,11 +133,14 @@ export const fetchAllPanchayathHoblis =
   try {
     const res = await axios.get(`${API_URL}/hoblis`,getAuthConfig());
 
-    console.log(res)
     dispatch(getAllHobliSuccess(res.data.data || res.data));
   } catch (err: any) {
     dispatch(hobliFailure());
-    toast.error(err?.response?.data?.message || "Failed to load Hoblis");
+    toast.error(
+  typeof err?.response?.data?.message === "string"
+    ? err.response.data.message
+    : "Failed to load Hoblis"
+);
   }
 };
 
@@ -190,8 +196,6 @@ export const deleteHobli =
         getAuthConfig()
       );
       dispatch(getHobliSummarySuccess(res.data.data || res.data));
-
-      console.log(res)
 
     } catch (err: any) {
       dispatch(hobliFailure());

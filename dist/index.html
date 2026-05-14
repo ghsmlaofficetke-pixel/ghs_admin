@@ -3,12 +3,50 @@
 
 <head>
     <meta charset="UTF-8"/>
+
+    <!-- ✅ iPhone notch + safe area support (viewport-fit=cover is KEY for iOS) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
+    <!-- ✅ PWA: iPhone Home Screen ಗೆ Add ಮಾಡಿದಾಗ fullscreen ತರ ಕಾಣಿಸಲು -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+
+    <!-- ✅ iPhone status bar (top notch area) - black-translucent = app content notch ತನಕ ಹೋಗ್ತದೆ -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <!-- ✅ Home screen ಮೇಲೆ ಕಾಣಿಸೋ app name -->
+    <meta name="apple-mobile-web-app-title" content="GHS MLA Office"/>
+
+    <!-- ✅ iPhone Home Screen icon (192x192 use ಮಾಡ್ತಿದ್ದೇವೆ) -->
+    <link rel="apple-touch-icon" href="/pwa-192x192.png"/>
+
+    <!-- ✅ Favicon -->
     <link href="/favicon.ico" rel="shortcut icon"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta content="The Most Complete Responsive Web UI Kit & Dashboard Template" name="description"/>
-    <meta content="Coderthemes" name="Coderthemes"/>
+
+    <!-- ✅ PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest"/>
+
+    <!-- SEO description -->
+    <meta name="description" content="126 ತರೀಕೆರೆ ವಿಧಾನಸಭಾ ಕ್ಷೇತ್ರ - GHS MLA Office"/>
+
+    <!-- ✅ Theme color - Android Chrome top bar + iPhone PWA status bar color -->
+    <meta name="theme-color" content="#0f172a"/>
+
+    <!-- ✅ iOS Safari ನಲ್ಲಿ phone numbers auto-detect ಆಗದಂತೆ -->
+    <meta name="format-detection" content="telephone=no"/>
+
     <title>GHS MLA Office</title>
+
     <style>
+        /* ✅ Safe area CSS variables - iPhone notch/home bar handle ಮಾಡಲು */
+        :root {
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-left: env(safe-area-inset-left, 0px);
+            --safe-area-right: env(safe-area-inset-right, 0px);
+        }
+
+        /* ✅ Splash screen */
         .splash-screen {
             position: fixed;
             top: 50%;
@@ -37,22 +75,65 @@
                 visibility: hidden;
             }
         }
+
+        /* ✅ iOS Safari bounce scroll fix - rubber band effect prevent */
+        html {
+            height: -webkit-fill-available;
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+            /* ✅ iOS tap highlight remove */
+            -webkit-tap-highlight-color: transparent;
+            /* ✅ iOS text size auto-adjust disable */
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* ✅ App header - iPhone notch ಗೆ top padding */
+        .app-header {
+            padding-top: max(env(safe-area-inset-top), 0px);
+        }
+
+        /* ✅ Mobile footer - iPhone home indicator (bottom bar) ಗೆ space */
+        .mobile-footer-wrapper {
+            padding-bottom: max(env(safe-area-inset-bottom), 0px);
+        }
     </style>
 
+    <!-- ✅ globalThis polyfill (older browsers/WebViews ಗಾಗಿ) -->
     <script>const global = globalThis;</script>
 
-  <script type="module" crossorigin src="/assets/index-a5eb3a39.js"></script>
-  <link rel="stylesheet" href="/assets/index-607ee9e1.css">
+  <script type="module" crossorigin src="/assets/index-d5d61379.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-5ad2f2be.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-redux-a2b3fa67.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-axios-36ca341e.js">
+  <link rel="stylesheet" href="/assets/index-6e7c4e60.css">
 <link rel="manifest" href="/manifest.webmanifest"></head>
 
 <body>
-<div id="konrix">
-</div>
+
+<!-- React app mount point -->
+<div id="konrix"></div>
+
+<!-- Splash screen - app load ಆಗುವ ತನಕ ಕಾಣಿಸ್ತದೆ -->
 <div class="splash-screen">
-    <img alt="Logo" class="light" src="/assets/logo-dark-4e88ab61.webp" style="height: 40%;"/>
+    <img
+        alt="GHS MLA Office Logo"
+        class="light"
+        src="/assets/logo-dark-4e88ab61.webp"
+        style="height: 40%; object-fit: contain;"
+    />
 </div>
 
+<!-- Main app script -->
+
+
+<!-- JavaScript ಇಲ್ಲದ browser ಗಾಗಿ message -->
 <noscript>You need to enable JavaScript to run this app.</noscript>
+
 </body>
 
 </html>

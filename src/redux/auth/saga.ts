@@ -43,8 +43,6 @@ function* login({
       response?.data?.token ||
       response?.data?.data?.token;
 
-console.log(response)
-
     if (!token) {
       throw new Error("Invalid phone number or password");
     }
@@ -55,7 +53,6 @@ console.log(response)
       authApiResponseSuccess(AuthActionTypes.LOGIN_USER, { token })
     );
   } catch (error: any) {
-console.log(error)
 
     const errorMessage =
       error ||
