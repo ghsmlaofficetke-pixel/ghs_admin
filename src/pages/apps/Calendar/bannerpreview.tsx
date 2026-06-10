@@ -22,7 +22,10 @@ interface Props {
   onClose: () => void;
   tpForDate: TPForDate | null;
   activeDate: string;
+  theme?: BannerTheme;
 }
+
+type BannerTheme = "blue" | "green" | "purple";
 
 /* ================= POSTER MODE ================= */
 type PosterMode = "blue" | "green" | "meroon";
@@ -185,8 +188,8 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
   const theme = themeStyles[posterMode];
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 overflow-auto">
-      <div className="w-full max-w-[580px]">
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-4 overflow-y-auto">
+      <div className="w-full max-w-[580px] my-auto">
 
         {/* ================= POSTER MODE BUTTONS ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
@@ -204,10 +207,10 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
           ))}
         </div>
 
-        <div className="bg-white rounded-xl shadow-xl relative">
+        <div className="bg-white rounded-xl shadow-xl relative flex flex-col max-h-[75vh]">
 
           {/* ================= SLIDER ================= */}
-          <div className="relative">
+          <div className="relative overflow-y-auto flex-1">
             {multiPage && currentPage > 0 && (
               <button onClick={() => scrollToPage(currentPage - 1)} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-3">
                 <FaChevronLeft size={20} />

@@ -10,6 +10,7 @@ import {
   deleteTp,
   tpSelector,
   TP,
+  TPEvent,
 } from "../../../api/tp";
 
 import Calendar from "./Calendar";
@@ -26,6 +27,11 @@ import BannerPreviewModal1 from "./bannerpreview1";
 ========================= */
 
 type BannerTheme = "blue" | "green" | "purple";
+
+interface TPFormValues {
+  date: string;
+  events: { time: string; description: string; location?: string }[];
+}
 
 /* =========================
    Helpers
@@ -193,8 +199,8 @@ const stripHtml = (html: string) => {
 
 
 const events: EventInput[] = useMemo(() => {
-  return all_tp.flatMap((tp) =>
-    (tp.events ?? []).map((ev, idx) => {
+  return all_tp.flatMap((tp: TP) =>
+    (tp.events ?? []).map((ev: TPEvent, idx: number) => {
       const cleanDesc = stripHtml(ev.description ?? "").trim();
 
       let title = "";
@@ -230,7 +236,7 @@ const events: EventInput[] = useMemo(() => {
       setSelectedDate(clickedDate);
 
       const tpExists = all_tp.some(
-        (tp) => normalizeDate(tp.date) === clickedDate
+        (tp: TP) => normalizeDate(tp.date) === clickedDate
       );
 
       // Don't open add modal for past dates or dates that already have a TP
@@ -253,7 +259,7 @@ const events: EventInput[] = useMemo(() => {
 
   const onEventClick = useCallback(
     (arg: EventClickArg) => {
-      const tp = all_tp.find((t) =>
+      const tp = all_tp.find((t: TP) =>
         t._id ? arg.event.id?.startsWith(t._id) : false
       );
 
@@ -274,14 +280,14 @@ const events: EventInput[] = useMemo(() => {
   ========================= */
 
   const onAddEvent = useCallback(
-    (data: TP) => {
+    (data: TPFormValues) => {
       const finalDate = data.date ?? dateInfo.date;
       if (!finalDate) return;
 
       dispatch(
         createTp({
           date: finalDate,
-          events: data.events ?? [],
+          events: (data.events ?? []) as TPEvent[],
         })
       );
 
@@ -292,14 +298,14 @@ const events: EventInput[] = useMemo(() => {
   );
 
   const onUpdateEvent = useCallback(
-    (data: TP) => {
+    (data: TPFormValues) => {
       if (!selectedTp?._id) return;
 
       dispatch(
         updateTp(selectedTp._id, {
           ...selectedTp,
           date: data.date ?? selectedTp.date,
-          events: data.events ?? [],
+          events: (data.events ?? []) as TPEvent[],
         })
       );
 
@@ -335,7 +341,7 @@ const events: EventInput[] = useMemo(() => {
   const activeTpForBanner = useMemo(() => {
     const keyDate = selectedDate ?? today;
     return (
-      all_tp.find((tp) => normalizeDate(tp.date) === normalizeDate(keyDate)) ??
+      all_tp.find((tp: TP) => normalizeDate(tp.date) === normalizeDate(keyDate)) ??
       null
     );
   }, [all_tp, selectedDate, today]);
@@ -500,7 +506,7 @@ const events: EventInput[] = useMemo(() => {
         <BannerPreviewModal
           open={openBanner}
           onClose={closeBannerModal}
-          tpForDate={selectedTp}
+          tpForDate={selectedTp ? { ...selectedTp, events: selectedTp.events.map(e => ({ ...e, description: e.description ?? "" })) } : null}
           activeDate={formatDate(selectedTp.date)}
           theme={bannerMode}
         />
@@ -511,7 +517,7 @@ const events: EventInput[] = useMemo(() => {
         <BannerPreviewModal1
           open={openBanner1}
           onClose={closeBannerModal1}
-          tpForDate={selectedTp}
+          tpForDate={selectedTp ? { ...selectedTp, events: selectedTp.events.map(e => ({ ...e, description: e.description ?? "" })) } : null}
           activeDate={formatDate(selectedTp.date)}
           theme={bannerMode1}
         />

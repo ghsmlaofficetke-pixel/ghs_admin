@@ -31,6 +31,11 @@ const StatasticApp = React.lazy(() => import("../pages/apps/Statistics/index"));
 const GovtOfficeApp = React.lazy(() => import("../pages/apps/GovtOffice/index"));
 
 const GOVTLinksApp = React.lazy(() => import("../pages/apps/GovtLinks/index"));
+const VoiceQueryPage = React.lazy(() => import("../pages/apps/VoiceQuery/VoiceQueryPage"));
+const ContactsPage = React.lazy(() => import("../pages/apps/Contacts/VillageContacts"));
+
+
+
 // error pages
 const Maintenance = React.lazy(() => import("../pages/error/Maintenance"));
 const ComingSoon = React.lazy(() => import("../pages/error/ComingSoon"));
@@ -81,7 +86,8 @@ const dashboardRoutes: RoutesProps = {
       element: <Dashboard />,
       route: PrivateRoute,
       layout: "vertical",
-    },
+    }
+
   ],
 };
 
@@ -218,6 +224,27 @@ const govtlinksAppRoutes: RoutesProps = {
   header: "Apps",
 };
 
+
+const voiceQueryAppRoutes: RoutesProps = {
+  path: "/apps/voice-query",
+  name: "Voice Query",
+  layout: "vertical",
+  roles: ["Admin"],
+  element: <VoiceQueryPage />,
+  route: PrivateRoute,
+  header: "Apps",
+};
+
+const contactsAppRoutes: RoutesProps = {
+  path: "/apps/contacts",
+  name: "Voice Query",
+  layout: "vertical",
+  roles: ["Admin"],
+  element: <ContactsPage />,
+  route: PrivateRoute,
+  header: "Apps",
+};
+
 /* ================= ROUTE ORDER ================= */
 
 const appRoutes = [
@@ -238,7 +265,9 @@ const appRoutes = [
   adhiveshanapdfAppRoutes,
   mlaladdAppRoutes,
   schemAppRoutes,
-  govtlinksAppRoutes
+  govtlinksAppRoutes,
+  voiceQueryAppRoutes,
+  contactsAppRoutes
 
 ];
 

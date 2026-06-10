@@ -1,7 +1,7 @@
 // ================= TodayTPBanner.tsx =================
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { tpSelector } from "../../../api/tp";
+import { tpSelector, TP } from "../../../api/tp";
 import Footer from "../../../assets/images/footer.png";
 import { FaInstagram, FaGlobe } from "react-icons/fa";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
@@ -55,7 +55,7 @@ const TodayTPBanner = ({
 
   const tpForDate = useMemo(() => {
     return all_tp.find(
-      (tp) => new Date(tp.date).toISOString().split("T")[0] === activeDate
+      (tp: TP) => new Date(tp.date).toISOString().split("T")[0] === activeDate
     );
   }, [all_tp, activeDate]);
 

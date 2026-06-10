@@ -25,6 +25,8 @@ import mlaladdReducer from "../api/mlaladd";
 import schemReducer from "../api/schem";
 import schemdataReducer from "../api/schemdata";
 import consolidateReducer from "../api/consolidate";
+import contactsReducer from "../api/contacts";
+
 
 // saga
 import rootSaga from "./sagas";
@@ -59,6 +61,7 @@ export const store = configureStore({
     schem: schemReducer,
     schemdata: schemdataReducer,
     consolidate:consolidateReducer,
+    contacts:contactsReducer
   } as any,
 
   middleware: (getDefaultMiddleware) =>

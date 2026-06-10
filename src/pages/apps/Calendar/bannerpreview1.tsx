@@ -29,7 +29,10 @@ interface Props {
   onClose: () => void;
   tpForDate: TPForDate | null;
   activeDate: string;
+  theme?: BannerTheme;
 }
+
+type BannerTheme = "blue" | "green" | "purple";
 
 type PosterMode = "blue" | "green" | "meroon";
 
@@ -185,8 +188,8 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
   const theme = themeStyles[posterMode];
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3 overflow-auto">
-      <div className="w-full max-w-[520px]">
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center p-3 overflow-y-auto">
+      <div className="w-full max-w-[520px] my-auto">
 
         {/* MODE BUTTONS */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
@@ -208,10 +211,10 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl relative overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl relative flex flex-col max-h-[75vh] overflow-hidden">
 
           {/* SLIDER */}
-          <div className="relative">
+          <div className="relative overflow-y-auto flex-1">
             <div
               ref={sliderRef}
               className="whitespace-nowrap overflow-x-auto snap-x snap-mandatory p-2"

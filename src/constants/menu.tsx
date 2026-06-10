@@ -101,6 +101,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
 
   {
     key: 'apps-statistics',
+    label: 'ಕಾರ್ಯಕರ್ತರ ಸಂಪರ್ಕ',
+    isTitle: false,
+    icon: 'mgc_folder_2_line',
+    url: '/apps/contacts',
+  },
+
+  {
+    key: 'apps-statistics',
     label: 'ಅಂಕಿ-ಅಂಶಗಳು',
     isTitle: false,
     icon: 'mgc_folder_2_line',
