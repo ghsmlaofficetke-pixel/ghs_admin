@@ -15,6 +15,19 @@ axios.defaults.timeout = 15000;
 ================================ */
 const AUTH_TOKEN_KEY = "token";
 
+
+const DEVICE_ID_KEY = "device_id";
+function getOrCreateDeviceId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = "dev_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}
+axios.defaults.headers.common["x-device-id"] = getOrCreateDeviceId();
+
+
 /* ===============================
    ✅ REQUEST DEDUPLICATION CACHE
    ಒಂದೇ API ಒಮ್ಮೆಲೆ 2 ಬಾರಿ call ಆದರೆ
@@ -55,18 +68,16 @@ const setCache = (key: string, data: any) => {
 
 /* ===============================
    SET / REMOVE AUTH HEADER
+   ✅ sessionStorage ತೆಗೆದಿದ್ದೇವೆ — tab close ಆದ್ರೂ
+      localStorage ಇರ್ತದೆ, 30d ವರೆಗೆ login ಇರ್ತದೆ
 ================================ */
 const setAuthorization = (token: string | null) => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    // ✅ sessionStorage - tab close ಆದ ಮೇಲೆ clear (more secure than localStorage)
-    sessionStorage.setItem(AUTH_TOKEN_KEY, token);
-    localStorage.setItem(AUTH_TOKEN_KEY, token); // backward compat
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
   } else {
     delete axios.defaults.headers.common["Authorization"];
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_TOKEN_KEY);
-    // ✅ Logout ಆದಾಗ cache clear ಮಾಡು
     requestCache.clear();
     pendingRequests.clear();
   }
@@ -96,15 +107,25 @@ axios.interceptors.response.use(
     let message = "Something went wrong";
 
     switch (status) {
-      case 401:
-        const token =
-          sessionStorage.getItem(AUTH_TOKEN_KEY) ||
-          localStorage.getItem(AUTH_TOKEN_KEY);
-        if (token) {
+      case 401: {
+        // ✅ ನಿಜವಾಗಿ session ಮುಗಿದ್ರೆ ಮಾತ್ರ token clear ಮಾಡು.
+        // Network error / server restart / other 401 ಗೆ logout ಮಾಡಬೇಡ.
+        const msg = backendMessage || "";
+        const isRealSessionError =
+          msg.includes("expired") ||
+          msg.includes("Invalid or expired token") ||
+          msg.includes("Session expired") ||
+          msg.includes("Logged in from another device") ||
+          msg.includes("User not found") ||
+          msg.includes("User no longer exists");
+
+        if (isRealSessionError) {
           setAuthorization(null);
         }
-        message = backendMessage || "Session expire ಆಗಿದೆ. ಮತ್ತೆ login ಮಾಡಿ.";
+
+        message = msg || "Session expire ಆಗಿದೆ. ಮತ್ತೆ login ಮಾಡಿ.";
         break;
+      }
 
       case 403:
         message = backendMessage || "ಈ page ನೋಡಲು permission ಇಲ್ಲ.";
@@ -233,19 +254,16 @@ class APICore {
     setAuthorization(token);
   };
 
+  // ✅ localStorage ಮಾತ್ರ — sessionStorage ತೆಗೆದಿದ್ದೇವೆ
   getLoggedInUser = () => {
-    const token =
-      sessionStorage.getItem(AUTH_TOKEN_KEY) ||
-      localStorage.getItem(AUTH_TOKEN_KEY);
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
     return token ? { token } : null;
   };
 
+  // ✅ Token valid ಇದೆಯಾ ಎಂದು check ಮಾಡು (expiry ಆಧಾರ)
   isUserAuthenticated = () => {
-    const token =
-      sessionStorage.getItem(AUTH_TOKEN_KEY) ||
-      localStorage.getItem(AUTH_TOKEN_KEY);
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
     if (!token) return false;
-
     try {
       const decoded: any = jwtDecode(token);
       return decoded.exp > Date.now() / 1000;
@@ -257,10 +275,9 @@ class APICore {
 
 /* ===============================
    RESTORE TOKEN ON PAGE REFRESH
+   ✅ Page reload / tab reopen ಆದ್ರೂ token restore ಆಗ್ತದೆ
 ================================ */
-const token =
-  sessionStorage.getItem(AUTH_TOKEN_KEY) ||
-  localStorage.getItem(AUTH_TOKEN_KEY);
+const token = localStorage.getItem(AUTH_TOKEN_KEY);
 if (token) {
   setAuthorization(token);
 }

@@ -273,7 +273,8 @@ const MonthlyTPPreview = forwardRef<HTMLDivElement, Props>(
               const rowClass = idx % 2 === 0 ? "mtp-row-even" : "mtp-row-odd";
 
               return (
-                <tr key={`${tp._id}-${idx}`} className={rowClass}>
+                // <tr key={`${tp._id}-${idx}`} className={rowClass}>
+                  <tr key={`${tp.date}-${idx}`} className={rowClass}>
                   {isFirst && (
                     <td
                       className={`mtp-date-cell${viewMode === "weekly" ? " mtp-date-cell-weekly" : ""}`}

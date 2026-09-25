@@ -26,7 +26,11 @@ import schemReducer from "../api/schem";
 import schemdataReducer from "../api/schemdata";
 import consolidateReducer from "../api/consolidate";
 import contactsReducer from "../api/contacts";
-
+import usersReducer from "../api/users";
+import electionReducer from "../api/election";
+import boothReducer from "../api/booth";
+import sanghaReducer from "../api/sangha";
+import yuvaSanghaReducer from "../api/yuvaSangha";
 
 // saga
 import rootSaga from "./sagas";
@@ -61,7 +65,12 @@ export const store = configureStore({
     schem: schemReducer,
     schemdata: schemdataReducer,
     consolidate:consolidateReducer,
-    contacts:contactsReducer
+    contacts:contactsReducer,
+    users: usersReducer,
+    election: electionReducer,
+    booth: boothReducer,
+    sangha: sanghaReducer,
+    yuvaSangha: yuvaSanghaReducer,
   } as any,
 
   middleware: (getDefaultMiddleware) =>

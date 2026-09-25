@@ -13,8 +13,8 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 ======================= */
 export interface GramaPanchayath {
   _id?: string;
-  name_en: string;
-  name_kn: string;
+  name: string;
+
   hobliId: string;
 }
 

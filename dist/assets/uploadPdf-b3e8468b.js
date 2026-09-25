@@ -1,0 +1,1 @@
+import{r as a,s,u as t,g as n}from"./firebase-01650a86.js";const e=async(e,o="adhiveshana")=>{const i=a(s,`${o}/${Date.now()}_${e.name}`);return await t(i,e,{contentType:"application/pdf"}),await n(i)};export{e as u};

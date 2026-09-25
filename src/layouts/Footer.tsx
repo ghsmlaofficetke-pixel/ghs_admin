@@ -20,7 +20,7 @@ const Footer = () => {
   }, []);
 
   return (
-<footer className="bg-white md:bg-white sm:h-14 h-16 sticky bottom-0 flex items-center justify-center border-t z-50">
+<footer className="bg-white md:bg-white sm:h-14 h-16 sticky bottom-0 flex items-center justify-center border-t z-20">
 
   {/* DESKTOP SAME */}
   <div className="hidden md:flex justify-between w-full items-center px-6 text-gray-600">

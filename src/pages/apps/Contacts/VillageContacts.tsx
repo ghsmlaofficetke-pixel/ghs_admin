@@ -15,6 +15,7 @@ import {
   fetchVillageContacts,
   searchContacts,
   clearContacts,
+  clearVillageContacts,
   GPSummary,
   ContactPerson,
   GPContacts,
@@ -31,6 +32,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
+import BulkMessagePanel from "./BulkMessagePanel";
 
 /* ─────────────────────────────── TYPES */
 type GPVillage = GPContacts["villages"][number];
@@ -174,6 +176,8 @@ export default function VillageContacts() {
   const [expandedVillages, setExpandedVillages] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
   const [dlLoading, setDlLoading] = useState(false);
+  const [selectedVillageIds, setSelectedVillageIds] = useState<Set<string>>(new Set());
+  const [showBulkPanel, setShowBulkPanel] = useState(false);
 
   const recRef = useRef<any>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -317,11 +321,30 @@ export default function VillageContacts() {
     }
   };
 
+  /* ── Village selection (checkbox) */
+  const toggleVillageSelect = useCallback((id: string) => {
+    setSelectedVillageIds(prev => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  }, []);
+
+  const selectAllVisible = useCallback((villageIds: string[]) => {
+    setSelectedVillageIds(prev => {
+      const allSelected = villageIds.every(id => prev.has(id));
+      if (allSelected) return new Set(); // deselect all
+      return new Set(villageIds);
+    });
+  }, []);
+
   /* ── Navigation */
   const openVillage = useCallback((id: string, name: string) => {
     setSelectedVillage({ id, name });
-    setView("village");
     dispatch(fetchVillageContacts(id));
+    // view "village" ಗೆ switch — data fetch start ಆದ ಮೇಲೆ
+    // (loading spinner village view ಅಲ್ಲೇ ಕಾಣಿಸ್ತದೆ)
+    setView("village");
   }, [dispatch]);
 
   const toggleExpand = useCallback((id: string) => {
@@ -332,23 +355,35 @@ export default function VillageContacts() {
     });
   }, []);
 
-  // ✅ Fix: back from village → gp keeps selectedGP + re-fetches if gpContacts lost
   const handleBack = useCallback(() => {
     if (view === "village") {
-      setView("gp");
       setSelectedVillage(null);
-      // Re-fetch GP if data was cleared
-      if (selectedGP && !gpContacts) {
+      // villageContacts clear ಮಾಡಿ — stale data GP view ಅಲ್ಲಿ ತೊಂದರೆ ಕೊಡಬಾರದು
+      dispatch(clearVillageContacts());
+      if (selectedGP && gpContacts && String(gpContacts.gp?._id) === String(selectedGP)) {
+        // GP data ಇದೆ — directly show, re-fetch ಬೇಡ
+        setView("gp");
+      } else if (selectedGP) {
+        // GP data lost — re-fetch ಮಾಡಿ, useEffect view switch ಮಾಡ್ತದೆ
         dispatch(fetchGPContacts(selectedGP));
+      } else {
+        setView("list");
       }
     } else if (view === "gp") {
       setView("list");
       setSelectedGP("");
+      setSelectedVillageIds(new Set());
       dispatch(clearContacts());
     }
   }, [view, selectedGP, gpContacts, dispatch]);
 
   /* ── Derived */
+  // All village IDs visible in current GP view (for Select All)
+  const currentGPVillageIds = useMemo(() =>
+    gpContacts?.villages.map(v => v._id) || [],
+    [gpContacts]
+  );
+
   const filteredGPList = useMemo(() =>
     gpSummaryList.filter((gp: GPSummary) => !selectedHobli || gp.hobli?._id === selectedHobli),
     [gpSummaryList, selectedHobli]
@@ -366,6 +401,14 @@ export default function VillageContacts() {
   /* ══════════════════════════════ RENDER */
   return (
     <div className="h-[calc(100vh-160px)] flex flex-col bg-gray-50 dark:bg-[#151e28] overflow-hidden">
+
+      {/* Bulk Message Panel (modal) */}
+      {showBulkPanel && selectedVillageIds.size > 0 && (
+        <BulkMessagePanel
+          selectedVillageIds={Array.from(selectedVillageIds)}
+          onClose={() => setShowBulkPanel(false)}
+        />
+      )}
 
       {/* ── HEADER */}
       <div className="sticky top-0 z-20 bg-white dark:bg-[#1f2a38] shadow-sm px-3 py-2.5 space-y-2">
@@ -413,7 +456,7 @@ export default function VillageContacts() {
             </div>
           )}
 
-          {/* GP view actions: Excel only */}
+          {/* GP view actions: Excel + Bulk Message */}
           {view === "gp" && gpContacts && (
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <button onClick={dlGPExcel}
@@ -628,10 +671,47 @@ export default function VillageContacts() {
                 <div>ಈ GP ಯಲ್ಲಿ ಯಾವ ಗ್ರಾಮಗಳೂ ಇಲ್ಲ</div>
               </div>
             )
-            : gpContacts.villages.map((v: GPVillage) => (
+            : (
+            <>
+              {/* ── Select All + Bulk Action Bar */}
+              <div className="flex items-center gap-2 px-1">
+                <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={currentGPVillageIds.length > 0 && currentGPVillageIds.every(id => selectedVillageIds.has(id))}
+                    onChange={() => selectAllVisible(currentGPVillageIds)}
+                    className="w-3.5 h-3.5 accent-blue-600"
+                  />
+                  ಎಲ್ಲಾ ಆಯ್ಕೆ ({selectedVillageIds.size})
+                </label>
+                {selectedVillageIds.size > 0 && (
+                  <div className="flex gap-1.5 ml-auto">
+                    <button
+                      onClick={() => setShowBulkPanel(true)}
+                      className="flex items-center gap-1 bg-indigo-600 text-white text-xs px-2.5 py-1.5 rounded-full hover:bg-indigo-700 transition shadow">
+                      <FaPhone size={10} /> Voice Call
+                    </button>
+                    <button
+                      onClick={() => setShowBulkPanel(true)}
+                      className="flex items-center gap-1 bg-green-600 text-white text-xs px-2.5 py-1.5 rounded-full hover:bg-green-700 transition shadow">
+                      <FaWhatsapp size={11} /> WhatsApp
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {gpContacts.villages.map((v: GPVillage) => (
                 <div key={v._id}
                   className="bg-white dark:bg-[#1f2a38] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                   <div className="flex items-center gap-2 px-3 py-2.5">
+                    {/* Checkbox for village selection */}
+                    <input
+                      type="checkbox"
+                      checked={selectedVillageIds.has(v._id)}
+                      onChange={() => toggleVillageSelect(v._id)}
+                      onClick={e => e.stopPropagation()}
+                      className="w-3.5 h-3.5 accent-blue-600 flex-shrink-0"
+                    />
                     <button
                       onClick={() => toggleExpand(v._id)}
                       className="flex-1 text-left min-w-0 flex items-center gap-2">
@@ -666,7 +746,9 @@ export default function VillageContacts() {
                     </div>
                   )}
                 </div>
-              ))
+              ))}
+            </>
+          )
         )}
 
         {/* ── VILLAGE DETAIL VIEW */}

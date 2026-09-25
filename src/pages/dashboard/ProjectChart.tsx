@@ -1,5 +1,5 @@
 import map from "../../assets/images/brands/poster.webp";
-import { Leaf, Landmark, Construction, Newspaper, Filter, Mic } from "lucide-react";
+import { Leaf, Landmark, Construction, Newspaper, Filter, Mic   } from "lucide-react";
 
 const HobliDashboard = () => {
   return (
@@ -24,48 +24,42 @@ const HobliDashboard = () => {
         <div className="flex flex-col gap-3 w-full">
 
           {/* ACTION CARD */}
-          <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-md p-2 sm:p-3">
-            <div className="grid grid-cols-2 gap-2">
+     <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-md p-2 sm:p-2 flex flex-col gap-3">
 
-              {/* MANAVI */}
-              <a
-                href="/apps/consolidation"
-                className="flex items-center justify-center gap-2 w-full text-center px-4 py-2 rounded-full
-                bg-gradient-to-r from-pink-500 to-rose-500
-                text-white text-xs sm:text-sm font-medium shadow
-                hover:scale-105 active:scale-95 transition"
-              >
-                <Filter size={16} />
-                ಮನವಿಗಳು
-              </a>
+  {/* Top row — 2 buttons */}
+  <div className="grid grid-cols-2 gap-2.5">
+    
+      <a href="/apps/consolidation"
+      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full
+        bg-pink-500 text-white text-xs sm:text-sm font-medium
+        hover:opacity-90 active:scale-95 transition-all"
+    >
+      <Filter size={15} />
+      ಮನವಿಗಳು
+    </a>
+   
+      <a href="/apps/consolidationwork"
+      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full
+        bg-[#2466d1] text-white text-xs sm:text-sm font-medium
+        hover:opacity-90 active:scale-95 transition-all"
+    >
+      <Filter size={15} />
+      ಅಭಿವೃಧ್ದಿ ಕೆಲಸಗಳು
+    </a>
+  </div>
 
-              {/* WORK */}
-              <a
-                href="/apps/consolidationwork"
-                className="flex items-center justify-center gap-2 w-full text-center px-4 py-2 rounded-full
-                bg-gradient-to-r from-[#2466d1] to-cyan-500
-                text-white text-xs sm:text-sm font-medium shadow
-                hover:scale-105 active:scale-95 transition"
-              >
-                <Filter size={16} />
-                ಅಭಿವೃಧ್ದಿ ಕೆಲಸಗಳು
-              </a>
-               </div>
+  {/* Full-width voice button */}
+  
+    <a href="/apps/voice-query"
+    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-full
+      bg-violet-600 text-white text-xs sm:text-sm font-medium
+      hover:opacity-90 active:scale-95 transition-all"
+  >
+    <Mic   size={15} />
+    ಧ್ವನಿಯಲ್ಲಿ ಹುಡುಕಿ (Voice Search)
+  </a>
 
-              {/* VOICE QUERY */}
-              {/* <a
-                href="/apps/voice-query"
-                className="flex items-center justify-center gap-2 w-full text-center px-4 py-2 rounded-full
-                bg-gradient-to-r from-violet-500 to-purple-600
-                text-white text-xs sm:text-sm font-medium shadow
-                hover:scale-105 active:scale-95 transition"
-              >
-                <Mic size={16} />
-                ಧ್ವನಿ ಹುಡುಕಾಟ
-              </a> */}
-
-           
-          </div>
+</div>
 
           {/* INFO CARD */}
           <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-3 sm:p-4 flex flex-col">

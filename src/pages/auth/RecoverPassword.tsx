@@ -9,7 +9,7 @@ import { FormInput, VerticalForm, AuthLayout, PageBreadcrumb } from '../../compo
 // redux
 import { useSelector,useDispatch } from 'react-redux'
 import { AppDispatch, RootState } from '../../redux/store'
-import { forgotPassword, resetAuth } from '../../redux/actions'
+import {  resetAuth } from '../../redux/actions'
 
 interface UserData {
   phone_no: string;
@@ -54,7 +54,7 @@ const RecoverPassword = () => {
  * handle form submission
  */
   const onSubmit = (formData: UserData) => {
-    dispatch(forgotPassword(formData.phone_no));
+    // dispatch(forgotPassword(formData.phone_no));
   };
   return (
     <>

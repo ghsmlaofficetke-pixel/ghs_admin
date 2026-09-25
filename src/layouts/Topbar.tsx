@@ -11,7 +11,7 @@ import logoDark from '../assets/images/logo-dark.webp'
 import logoSm from '../assets/images/logo-sm.png'
 
 // avatar
-import profilePic from '../assets/images/leader.png'
+import profilePic from '../assets/images/congress.png'
 import { MaximizeScreen, NotificationDropdown} from "../components";
 
 export interface NotificationItem {

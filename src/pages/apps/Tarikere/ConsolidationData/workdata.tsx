@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../../redux/store";
 import { fetchConsolidatedWork, workSelector } from "../../../../api/consolidate";
 import * as XLSX from "xlsx";
-import html2pdf from "html2pdf.js";
 import { FiSearch, FiX } from "react-icons/fi";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
 
@@ -29,7 +28,7 @@ const INDIVIDUAL_COLS = [
 
 const COMMUNITY_COLS = [
   { key: "workDetails",     label: "ಕೆಲಸದ ವಿವರ",      width: 220 },
-  { key: "estimatedAmount", label: "ಮೊತ್ತ",            width: 70  },
+  { key: "estimatedAmount", label: "ಮೊತ್ತ (ಲಕ್ಷ ₹)",            width: 70  },
   { key: "scheme",          label: "ಯೋಜನೆ",             width: 200 },
   { key: "department",      label: "ಅನುಷ್ಠಾನ ಇಲಾಖೆ",  width: 110 },
   { key: "letterNumber",    label: "ಪತ್ರ ಸಂಖ್ಯೆ",      width: 115 },
@@ -235,6 +234,8 @@ const WorkDashboard = () => {
     await document.fonts.ready;
     const el = document.getElementById("work-pdf-area");
     if (!el) { setIsPdf(false); setPdfLoading(false); return; }
+    const h2p = await import('html2pdf.js');
+    const html2pdf = (h2p as any).default ?? h2p;
     try {
       await (html2pdf() as any).from(el).set({
         margin:      [5, 4, 6, 4],

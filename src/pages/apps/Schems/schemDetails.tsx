@@ -14,8 +14,6 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { FaArrowLeft, FaFileExcel, FaFilePdf, FaPlus, FaSearch } from "react-icons/fa";
 
 import * as XLSX from "xlsx";
-import html2pdf from "html2pdf.js";
-
 /* ─────────────────────────────────────────── TYPES */
 type Props = { schemId: string; onBack: () => void };
 
@@ -39,6 +37,11 @@ const EMPTY_FORM: DataType = {
   remark: "",
   status: "",
 };
+
+const YEARS = [
+  "2023-24",
+  "2024-25", "2025-26", "2026-27", "2027-28",
+];
 
 /* ─────────────────────────────────────────── PDF LOADER */
 function PdfLoader({ visible }: { visible: boolean }) {
@@ -101,7 +104,10 @@ function FormModal({
         <div className="sd-form-grid">
           <div className="sd-field">
             <label>ವರ್ಷ <span className="sd-required">*</span></label>
-            <input placeholder="2024-25" value={form.year} onChange={(e) => set("year", e.target.value)} />
+            <select value={form.year} onChange={(e) => set("year", e.target.value)}>
+  <option value="">-- ವರ್ಷ ಆಯ್ಕೆಮಾಡಿ --</option>
+  {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+</select>
           </div>
           <div className="sd-field">
             <label>ಆಡಳಿತ ಇಲಾಖೆ</label>
@@ -264,6 +270,8 @@ export default function SchemDetails({ schemId, onBack }: Props) {
     await document.fonts.ready;
     const element = document.getElementById("schem-pdf-table");
     if (!element) { setIsPdf(false); setPdfLoading(false); return; }
+    const h2p = await import('html2pdf.js');
+      const html2pdf = (h2p as any).default ?? h2p;
     try {
       await (html2pdf() as any).from(element).set({
         margin: [8, 6, 8, 6],
@@ -669,7 +677,7 @@ export default function SchemDetails({ schemId, onBack }: Props) {
                 <col style={{ width: isPdf ? "7%" : 70 }} />
                 <col style={{ width: isPdf ? "12%" : 120 }} />
                 <col style={{ width: isPdf ? "30%" : 300 }} />
-                <col style={{ width: isPdf ? "9%" : 90 }} />
+                <col style={{ width: isPdf ? "10%" : 95 }} />
                 <col style={{ width: isPdf ? "14%" : 120 }} />
                 <col style={{ width: isPdf ? "14%" : 140 }} />
                 <col style={{ width: isPdf ? "12%" : 110 }} />
@@ -681,7 +689,7 @@ export default function SchemDetails({ schemId, onBack }: Props) {
                   <th className="th-left">ವರ್ಷ</th>
                   <th className="th-left">ಆಡಳಿತ ಇಲಾಖೆ</th>
                   <th className="th-left">ಕಾಮಗಾರಿಯ ವಿವರಣೆ</th>
-                  <th>ಮೊತ್ತ (₹)</th>
+                  <th>ಮೊತ್ತ (ಲಕ್ಷ ₹)</th>
                   <th className="th-left">ಅನುಷ್ಠಾನ ಇಲಾಖೆ</th>
                   <th className="th-left">ಷರಾ</th>
                   <th>Status</th>

@@ -1,6 +1,6 @@
 import { FaDownload, FaChevronLeft, FaChevronRight, FaFacebookF, FaInstagram, FaGlobe } from "react-icons/fa";
 import FooterImg from "../../../assets/images/footer.png";
-import LeaderImg from "../../../assets/images/leader.png";
+import LeaderImg from "../../../assets/images/congress.png";
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import DOMPurify from "dompurify";
@@ -253,7 +253,7 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
                       </div>
                     </div>
 
-                    <img src={LeaderImg} className="h-[80px] w-[80px] object-contain rounded-full" />
+                    <img src={LeaderImg} className="h-[60px] w-[60px] object-contain rounded-full" />
                   </div>
 
                   {/* ================= EVENTS (FIXED) ================= */}

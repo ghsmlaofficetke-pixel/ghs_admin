@@ -22,6 +22,7 @@ type IndItem = {
   scheme: string;
   address: string;
   orderNumber: string;
+  Reference: string;
 };
 
 const EMPTY_FORM: IndItem = {
@@ -30,6 +31,7 @@ const EMPTY_FORM: IndItem = {
   scheme: "",
   address: "",
   orderNumber: "",
+  Reference: "",
 };
 
 /* ─────────────────────────────────────────── PDF LOADER */
@@ -150,6 +152,16 @@ function FormModal({
               onChange={(e) => set("address", e.target.value)}
             />
           </div>
+
+          <div className="ind-field ind-full">
+            <label>ಷರಾ</label>
+            <textarea
+              rows={3}
+              placeholder="Reference"
+              value={form.Reference}
+              onChange={(e) => set("Reference", e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="ind-modal-actions">
@@ -175,14 +187,14 @@ function FormModal({
 export default function IndividualWorksTable({ villageId }: { villageId: string }) {
   const dispatch = useDispatch<AppDispatch>();
   const { list = [], loading } = useSelector(individualWorkSelector);
-  const { current: village }  = useSelector(villageSelector);
+  const { current: village } = useSelector(villageSelector);
 
-  const [search, setSearch]           = useState("");
-  const [openModal, setOpenModal]     = useState(false);
-  const [editData, setEditData]       = useState<IndItem | null>(null);
-  const [deleteId, setDeleteId]       = useState<string | null>(null);
-  const [isPdf, setIsPdf]             = useState(false);
-  const [pdfLoading, setPdfLoading]   = useState(false);
+  const [search, setSearch] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [editData, setEditData] = useState<IndItem | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isPdf, setIsPdf] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     if (villageId) {
@@ -196,7 +208,7 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
     const q = (search || "").toLowerCase().trim();
     return (list as IndItem[]).filter((item) => {
       if (!q) return true;
-      return [item.name, item.scheme, item.mobile, item.orderNumber, item.address]
+      return [item.name, item.scheme, item.mobile, item.orderNumber, item.address, item.Reference]
         .join(" ").toLowerCase().includes(q);
     });
   }, [list, search]);
@@ -222,12 +234,12 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
 
   /* ── EXCEL */
   const exportExcel = () => {
-    const title    = `${village?.name || ""} ಗ್ರಾಮದ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಗಳ ವಿವರ`;
-    const dateStr  = new Date().toLocaleDateString("en-IN");
+    const title = `${village?.name || ""} ಗ್ರಾಮದ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಗಳ ವಿವರ`;
+    const dateStr = new Date().toLocaleDateString("en-IN");
 
     const headerRow = [
       "ಕ್ರ.ಸಂ", "ಗ್ರಾಮ", "ಹೆಸರು", "ಯೋಜನೆ",
-      "ಆದೇಶ ಸಂಖ್ಯೆ", "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", "ವಿಳಾಸ",
+      "ಆದೇಶ ಸಂಖ್ಯೆ", "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", "ವಿಳಾಸ", "ಷರಾ",
     ];
 
     const dataRows = filtered.map((item, i) => [
@@ -238,11 +250,12 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
       item.orderNumber,
       item.mobile,
       item.address,
+      item.Reference,
     ]);
 
     const aoa = [
       [title],
-      [`ದಿನಾಂಕ: ${dateStr}`, "", "", "", `ಒಟ್ಟು ದಾಖಲೆ: ${filtered.length}`],
+      [`ದಿನಾಂಕ: ${dateStr}`, "", "", "", "", `ಒಟ್ಟು ದಾಖಲೆ: ${filtered.length}`],
       [],
       headerRow,
       ...dataRows,
@@ -251,9 +264,9 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [
       { wch: 7 }, { wch: 16 }, { wch: 22 }, { wch: 28 },
-      { wch: 18 }, { wch: 16 }, { wch: 32 },
+      { wch: 18 }, { wch: 16 }, { wch: 32 }, { wch: 24 },
     ];
-    ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
+    ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಗಳು");
@@ -275,10 +288,10 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
       await (html2pdf() as any).from(element).set({
         margin: [8, 6, 8, 6],
         filename: `${village?.name || "Village"}_ವೈಯಕ್ತಿಕ_ಫಲಾನುಭವಿಗಳು.pdf`,
-        image:       { type: "jpeg", quality: 1 },
+        image: { type: "jpeg", quality: 1 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
-        jsPDF:       { unit: "mm", format: "a4", orientation: "landscape" },
-        pagebreak:   { mode: ["avoid-all", "css"] },
+        jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+        pagebreak: { mode: ["avoid-all", "css"] },
       }).save();
     } finally {
       setIsPdf(false);
@@ -294,28 +307,20 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         @keyframes ind-fade-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
         @keyframes ind-slide-up{ from { opacity:0; transform:translateY(24px) scale(0.98); } to { opacity:1; transform:none; } }
 
-        /* ── ROOT
-           calc(100vh - 158px) accounts for:
-             ~60px  top navbar
-             ~50px  page breadcrumb/header bar
-             ~48px  tab switcher row
-        ────────────────────────────────────────────────────────── */
         .ind-root {
           display: flex;
           flex-direction: column;
           height: 100%;
-  max-height: 100%;
+          max-height: 100%;
           background: #f0f4f8;
           font-family: 'Segoe UI', 'Noto Sans Kannada', sans-serif;
           overflow: hidden;
         }
 
-             html, body, #root {
-  height: 100%;
-}
+        html, body, #root {
+          height: 100%;
+        }
 
-
-        /* ── HEADER */
         .ind-header {
           background: #fff;
           border-bottom: 1px solid #e2e8f0;
@@ -345,7 +350,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         }
         .ind-add-btn:hover { opacity: 0.9; transform: scale(1.03); }
 
-        /* ── FILTERS */
         .ind-filters {
           display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
         }
@@ -384,7 +388,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         .ind-btn-excel:active,
         .ind-btn-pdf:active     { transform: scale(0.97); }
 
-        /* ── STATS – fixed height, never shrinks */
         .ind-stats {
           display: flex; gap: 10px; padding: 8px 12px;
           flex-shrink: 0; flex-wrap: wrap;
@@ -397,21 +400,16 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         }
         .ind-stat-chip strong { color: #1a3d7c; font-size: 13px; }
 
-        /* ── TABLE WRAP */
         .ind-table-wrap {
           flex: 1 1 0;
-            min-height: 0;
-  height: 100%;  
+          min-height: 0;
+          height: 100%;
           display: flex;
           flex-direction: column;
           padding: 0 8px 8px;
           overflow: hidden;
         }
 
-        /* ── SCROLL CONTAINER (normal view)
-           Direct flex child → flex:1 1 0 + min-height:0 fills the wrap
-           without ever overflowing it. Both axes scroll here.
-        */
         .ind-scroll {
           flex: 1 1 0;
           min-height: 0;
@@ -427,20 +425,17 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         .ind-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
         .ind-scroll::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 4px; }
 
-        /* ── PDF MODE wrapper – no scroll, expands fully for html2pdf */
         .ind-pdf-area-print {
           width: 100%;
           background: #fff;
         }
 
-        /* ── TABLE */
         .ind-table {
-          width: 100%; min-width: 800px;
+          width: 100%; min-width: 900px;
           border-collapse: collapse; table-layout: fixed;
           page-break-inside: auto;
         }
 
-        /* Sticky header – works because ind-scroll is the scroll parent */
         .ind-table thead th {
           background: linear-gradient(180deg, #06b6d4 0%, #2466d1 100%);
           color: #fff; font-size: 12px; font-weight: 700;
@@ -490,7 +485,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         .ind-del-btn  { cursor: pointer; color: #ef4444; transition: transform 0.1s, color 0.1s; }
         .ind-del-btn:hover  { color: #b91c1c; transform: scale(1.2); }
 
-        /* ── PDF TITLE */
         .ind-pdf-title {
           text-align: center; margin-bottom: 14px;
           padding: 10px 12px 12px;
@@ -500,7 +494,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         .ind-pdf-title h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; color: #1a3d7c; }
         .ind-pdf-title p  { font-size: 10.5px; margin: 0; color: #4b5563; }
 
-        /* ── OVERLAY / MODAL */
         .ind-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.45);
           display: flex; justify-content: center; align-items: center;
@@ -535,7 +528,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
           margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9;
         }
 
-        /* ── FORM */
         .ind-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .ind-field { display: flex; flex-direction: column; gap: 5px; }
         .ind-field.ind-full { grid-column: 1 / -1; }
@@ -554,7 +546,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
           background: #fff;
         }
 
-        /* ── BUTTONS */
         .ind-btn {
           padding: 8px 18px; border-radius: 8px;
           font-size: 13px; font-weight: 600; border: none; cursor: pointer;
@@ -571,7 +562,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
         .ind-btn-danger { background: #dc2626; color: #fff; }
         .ind-btn-danger:hover { background: #b91c1c; }
 
-        /* ── RESPONSIVE */
         @media (max-width: 600px) {
           .ind-form-grid { grid-template-columns: 1fr; }
           .ind-field.ind-full { grid-column: 1 / -1; }
@@ -579,7 +569,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
           .ind-title { font-size: 13px; }
         }
 
-        /* ── PRINT */
         @media print {
           html, body { height: auto !important; }
           .ind-scroll { overflow: visible !important; max-height: none !important; }
@@ -653,7 +642,6 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
             id="ind-pdf-area"
             className={isPdf ? "ind-pdf-area-print" : "ind-scroll"}
           >
-
             {isPdf && (
               <div className="ind-pdf-title">
                 <h2>{village?.name || ""} ಗ್ರಾಮದ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಗಳ ವಿವರ</h2>
@@ -667,11 +655,12 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
             <table className="ind-table">
               <colgroup>
                 <col style={{ width: 48 }} />
+                <col style={{ width: isPdf ? "18%" : 170 }} />
                 <col style={{ width: isPdf ? "22%" : 200 }} />
-                <col style={{ width: isPdf ? "28%" : 260 }} />
-                <col style={{ width: isPdf ? "13%" : 100 }} />
-                <col style={{ width: isPdf ? "14%" : 120 }} />
-                <col style={{ width: isPdf ? "19%" : 180 }} />
+                <col style={{ width: isPdf ? "11%" : 100 }} />
+                <col style={{ width: isPdf ? "12%" : 120 }} />
+                <col style={{ width: isPdf ? "18%" : 180 }} />
+                <col style={{ width: isPdf ? "19%" : 170 }} />
                 {!isPdf && <col style={{ width: 72 }} />}
               </colgroup>
 
@@ -683,6 +672,7 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
                   <th>ಮೊಬೈಲ್</th>
                   <th>ಆದೇಶ ಸಂಖ್ಯೆ</th>
                   <th className="th-left">ವಿಳಾಸ</th>
+                  <th className="th-left">ಷರಾ</th>
                   {!isPdf && <th>Action</th>}
                 </tr>
               </thead>
@@ -690,13 +680,13 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
               <tbody>
                 {loading && (
                   <tr className="ind-empty">
-                    <td colSpan={isPdf ? 6 : 7}>ಡೇಟಾ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</td>
+                    <td colSpan={isPdf ? 7 : 8}>ಡೇಟಾ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</td>
                   </tr>
                 )}
 
                 {!loading && filtered.length === 0 && (
                   <tr className="ind-empty">
-                    <td colSpan={isPdf ? 6 : 7}>ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ</td>
+                    <td colSpan={isPdf ? 7 : 8}>ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ</td>
                   </tr>
                 )}
 
@@ -710,6 +700,7 @@ export default function IndividualWorksTable({ villageId }: { villageId: string 
                     <td className="td-center">{item.mobile || "—"}</td>
                     <td className="td-center">{item.orderNumber || "—"}</td>
                     <td>{item.address || "—"}</td>
+                    <td>{item.Reference || "—"}</td>
                     {!isPdf && (
                       <td className="ind-action-cell">
                         <div className="ind-actions">

@@ -35,6 +35,13 @@
     <!-- ✅ iOS Safari ನಲ್ಲಿ phone numbers auto-detect ಆಗದಂತೆ -->
     <meta name="format-detection" content="telephone=no"/>
 
+    <!-- ✅ Security: prevent clickjacking in older browsers -->
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN"/>
+    <!-- ✅ Security: XSS protection -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+    <!-- ✅ Security: no referrer leak to external sites -->
+    <meta name="referrer" content="strict-origin-when-cross-origin"/>
+
     <title>GHS MLA Office</title>
 
     <style>
@@ -106,11 +113,11 @@
     <!-- ✅ globalThis polyfill (older browsers/WebViews ಗಾಗಿ) -->
     <script>const global = globalThis;</script>
 
-  <script type="module" crossorigin src="/assets/index-08a517c8.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-5ad2f2be.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-redux-a2b3fa67.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-axios-36ca341e.js">
-  <link rel="stylesheet" href="/assets/index-d60992fb.css">
+  <script type="module" crossorigin src="/assets/index-42286480.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-a5afb9a4.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-redux-c641d1ea.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-axios-c532e536.js">
+  <link rel="stylesheet" href="/assets/index-eb1bc5d0.css">
 <link rel="manifest" href="/manifest.webmanifest"></head>
 
 <body>
@@ -123,7 +130,7 @@
     <img
         alt="GHS MLA Office Logo"
         class="light"
-        src="/assets/logo-dark-4e88ab61.webp"
+        src="/logo.png"
         style="height: 40%; object-fit: contain;"
     />
 </div>

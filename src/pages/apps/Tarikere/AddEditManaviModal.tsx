@@ -277,12 +277,15 @@ export default function AddEditManaviModal({
 
       {/* STATUS (only edit) */}
       {editData && (
-        <input
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          placeholder="Status"
-          className="border border-slate-400 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none col-span-full"
-        />
+        <div className="col-span-full">
+          <label className="block text-sm mb-1">ಸ್ಥಿತಿ / Status</label>
+          <CustomDropdown
+            value={status}
+            onChange={setStatus}
+            placeholder="Status ಆಯ್ಕೆಮಾಡಿ"
+            options={["Pending", "Approved", "Rejected"]}
+          />
+        </div>
       )}
 
     </div>

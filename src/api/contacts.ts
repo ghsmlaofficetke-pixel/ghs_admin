@@ -94,12 +94,15 @@ const contactsSlice = createSlice({
       state.villageContacts = null;
       state.searchResults = [];
     },
+    clearVillageContacts: (state) => {
+      state.villageContacts = null;
+    },
   },
 });
 
 export const {
   start, setGPContacts, setVillageContacts, setSearchResults,
-  setGPSummaryList, failure, clearContacts
+  setGPSummaryList, failure, clearContacts, clearVillageContacts
 } = contactsSlice.actions;
 
 export const contactsSelector = (state: RootState) => state.contacts;

@@ -8,17 +8,24 @@ import App from './App.js'
 import { store } from "./redux/store.js";
 
 // ✅ Register Service Worker with Update Notification
+// intervalMS: every 60 minutes check for new version (user ಗೆ update ಗೊತ್ತಾಗುತ್ತದೆ)
 const updateSW = registerSW({
   onNeedRefresh() {
-    // New version ready — App.tsx nalli listener catch madta
     window.dispatchEvent(new CustomEvent('pwa-update-available', {
       detail: { updateSW }
     }));
   },
   onOfflineReady() {
-    console.info('App is ready to work offline')
+    // App offline ಆಗುತ್ತದೆ ಎಂದು ಗೊತ್ತಾಗಿದೆ
   },
+  immediate: true,
 });
+
+// ✅ Periodic update check — every 30 minutes
+// Page reload ಇಲ್ಲದೆಯೂ user ಗೆ new version ಗೊತ್ತಾಗುತ್ತದೆ
+setInterval(() => {
+  updateSW();
+}, 30 * 60 * 1000);
 
 const container = document.getElementById('konrix');
 

@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { toPng } from "html-to-image";
 import FooterImg from "../../../assets/images/footer.png";
-import LeaderImg from "../../../assets/images/leader.png";
+import LeaderImg from "../../../assets/images/congress.png";
 import { useRef, useState } from "react";
 import DOMPurify from "dompurify";
 /* ================= TYPES ================= */
@@ -229,7 +229,7 @@ const webLink = encodeURIComponent("https://tarikeremlaghsrinivas.com/");
                   <div className="flex items-center justify-between mb-4">
                     <img
                       src={LeaderImg}
-                      className="h-[80px] w-[80px] object-contain"
+                      className="h-[60px] w-[60px] object-contain"
                       alt="Leader"
                     />
 

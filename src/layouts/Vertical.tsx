@@ -103,21 +103,21 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
             <LeftSideBar isCondensed={isCondensed} isLight={isLight} />
           </Suspense>
 
-          <div className="page-content">
+          <div className="page-content flex flex-col h-screen overflow-y-auto">
 
             <Suspense fallback={loading()}>
               <Topbar />
             </Suspense>
 
-            <main className="flex-grow p-3">
+            <main className="flex-grow p-3 min-h-0">
               <Suspense fallback={<Preloader />}>
                 {children}
               </Suspense>
             </main>
 
-           <Suspense fallback={loading()}>
-  <Footer />
-</Suspense>
+            <Suspense fallback={loading()}>
+              <Footer />
+            </Suspense>
           </div>
         </div>
 

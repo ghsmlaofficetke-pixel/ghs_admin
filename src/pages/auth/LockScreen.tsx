@@ -5,8 +5,6 @@ import * as yup from "yup";
 // components
 import { FormInput, VerticalForm, AuthLayout, PageBreadcrumb } from '../../components';
 
-// images
-import avatar1 from '../../assets/images/users/avatar-1.jpg'
 
 interface UserData {
   password: string;
@@ -49,7 +47,7 @@ const LockScreen = () => {
         authTitle='Lock Screen'
         helpText='Enter your password to access the admin.'
         bottomLinks={<BottomLink />}
-        userImage={avatar1}
+        userImage={''}
       >
         <VerticalForm<UserData>
           onSubmit={onSubmit}

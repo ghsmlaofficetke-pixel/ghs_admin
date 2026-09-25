@@ -3,8 +3,8 @@ import { APICore } from "../helpers/api/apiCore";
 
 const PrivateRoute = () => {
   const api = new APICore();
-  const user = api.getLoggedInUser();
-  return user ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  // ✅ Check JWT expiry — expired token ಇದ್ದರೆ login ಗೆ redirect
+  return api.isUserAuthenticated() ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
 export default PrivateRoute;

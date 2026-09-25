@@ -32,6 +32,11 @@ const EMPTY_FORM: MLAItem = {
   amount: "", department: "", remark: "", status: "",
 };
 
+const YEARS = [
+  "2023-24",
+  "2024-25", "2025-26", "2026-27", "2027-28",
+];
+
 const PHASES = ["1ನೇ ಕಂತು", "2ನೇ ಕಂತು", "3ನೇ ಕಂತು", "4ನೇ ಕಂತು"];
 
 /* ─────────────────────────────────────────── PDF LOADER */
@@ -94,7 +99,10 @@ function FormModal({
         <div className="ml-form-grid">
           <div className="ml-field">
             <label>ವರ್ಷ <span className="ml-required">*</span></label>
-            <input placeholder="2024-25" value={form.year} onChange={(e) => set("year", e.target.value)} />
+            <select value={form.year} onChange={(e) => set("year", e.target.value)}>
+  <option value="">-- ವರ್ಷ ಆಯ್ಕೆಮಾಡಿ --</option>
+  {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+</select>
           </div>
           <div className="ml-field">
             <label>ಕಂತು</label>
@@ -595,7 +603,7 @@ export default function MLALADDPage() {
                 <col style={{ width: isPdf ? "7%" : 75 }} />
                 <col style={{ width: isPdf ? "9%" : 95 }} />
                 <col style={{ width: isPdf ? "30%" : 320 }} />
-                <col style={{ width: isPdf ? "9%" : 85 }} />
+                <col style={{ width: isPdf ? "10%" : 95 }} />
                 <col style={{ width: isPdf ? "12%" : 120 }} />
                 <col style={{ width: isPdf ? "14%" : 140 }} />
                 <col style={{ width: isPdf ? "10%" : 110 }} />
@@ -607,7 +615,7 @@ export default function MLALADDPage() {
                   <th className="th-left">ವರ್ಷ</th>
                   <th className="th-left">ಕಂತು</th>
                   <th className="th-left">ಕಾಮಗಾರಿಯ ಹೆಸರು</th>
-                  <th>ಮೊತ್ತ </th>
+                  <th>ಮೊತ್ತ (ಲಕ್ಷ ₹)</th>
                   <th className="th-left">ಅನುಷ್ಠಾನ ಇಲಾಖೆ</th>
                   <th className="th-left">ಷರಾ</th>
                   <th>Status</th>

@@ -1,0 +1,1 @@
+import{r as a,s as e,u as s,g as t}from"./firebase-01650a86.js";const n=async(n,o="elections")=>{const r=n.type||"image/jpeg",i=a(e,`${o}/${Date.now()}_${n.name}`);return await s(i,n,{contentType:r}),await t(i)};export{n as u};

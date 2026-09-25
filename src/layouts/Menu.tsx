@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 // helpers
-import { findAllParent, findMenuItem } from "../helpers/menu";
+import { findAllParent, findAllChildren, findMenuItem } from "../helpers/menu";
 
 // constants
 import { MenuItemTypes } from "../constants/menu";
@@ -21,43 +21,31 @@ interface SubMenus {
    MENU WITH CHILDREN
 ================================= */
 
+// "open" is derived directly from activeMenuItems (no local state to
+// keep in sync). This removes a mobile-only race where a local
+// setOpen(true) could be reverted by a stale-prop effect before the
+// parent's state update landed, making the dropdown appear to never
+// open on mobile even though it worked fine on desktop.
 const MenuItemWithChildren = ({
   item,
   linkClassName,
   subMenuClassNames,
-  activeMenuItems,
-  
+  activeMenuItems = [],
   toggleMenu,
 }: SubMenus) => {
-  const html = document.documentElement;
-  const isMobile = html.getAttribute("data-sidenav-view") === "mobile";
+  const open = activeMenuItems.includes(item.key);
 
-  const [open, setOpen] = useState<boolean>(
-    activeMenuItems?.includes(item.key) || false
-  );
-
-  useEffect(() => {
-    if (activeMenuItems?.includes(item.key)) {
-      setOpen(true);
-    } else if (isMobile) {
-      setOpen(false);
-    }
-  }, [activeMenuItems, item.key, isMobile]);
-
-  const toggleMenuItem = () => {
-    const status = !open;
-    setOpen(status);
-    if (toggleMenu) toggleMenu(item, status);
-    return false;
+  const toggleMenuItem = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (toggleMenu) toggleMenu(item, !open);
   };
 
   return (
     <li className="menu-item">
-      <Link
-        to="#"
-        className={`${linkClassName} ${
-          activeMenuItems?.includes(item.key) ? "active open" : ""
-        }`}
+      <button
+        type="button"
+        className={`${linkClassName} ${open ? "active open" : ""} w-full text-start`}
         aria-expanded={open}
         data-menu-key={item.key}
         onClick={toggleMenuItem}
@@ -69,7 +57,7 @@ const MenuItemWithChildren = ({
         )}
         <span className="menu-text">{item.label}</span>
         <span className="menu-arrow" />
-      </Link>
+      </button>
 
       <SimpleCollapse open={open} as="ul" classNames={subMenuClassNames}>
         {(item.children || []).map((child, idx) => (
@@ -178,19 +166,31 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const [activeMenuItems, setActiveMenuItems] = useState<Array<string>>([]);
 
   const toggleMenu = (menuItem: MenuItemTypes, show: boolean) => {
-    if (show) {
-      setActiveMenuItems([
-        menuItem.key,
-        ...findAllParent(menuItems, menuItem),
-      ]);
-    } else {
-      const html = document.documentElement;
-      const view = html.getAttribute("data-sidenav-view");
+    const html = document.documentElement;
+    const isMobile = html.getAttribute("data-sidenav-view") === "mobile";
 
-      if (view === "mobile") {
-        setActiveMenuItems([]);
+    setActiveMenuItems((prev) => {
+      if (show) {
+        const parents = findAllParent(menuItems, menuItem);
+
+        // Mobile: accordion behavior — only one top-level dropdown
+        // open at a time, so opening one always shows correctly
+        // instead of getting lost among other open items.
+        if (isMobile) {
+          return [menuItem.key, ...parents];
+        }
+
+        // Desktop: allow multiple open at once, just add this item.
+        return Array.from(new Set([...prev, menuItem.key, ...parents]));
       }
-    }
+
+      // Closing: drop this item and its whole sub-tree from the open
+      // list, but leave unrelated open items untouched.
+      const descendants = findAllChildren(menuItem);
+      return prev.filter(
+        (key) => key !== menuItem.key && !descendants.includes(key)
+      );
+    });
   };
 
   const activeMenu = useCallback(() => {

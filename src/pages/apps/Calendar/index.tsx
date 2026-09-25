@@ -21,6 +21,7 @@ import DeleteModal from "../../../layouts/Deletemodal";
 import MonthlyTPModal from "./MonthlyTp/modal";
 import BannerPreviewModal from "./bannerpreview";
 import BannerPreviewModal1 from "./bannerpreview1";
+import BannerPreviewModal2 from "./bannerpreview2";
 
 /* =========================
    Types
@@ -69,8 +70,10 @@ interface SidePanelProps {
   onMonthlyTP: () => void;
   onBannerMode: (theme: BannerTheme) => void;
   onBannerMode1: (theme: BannerTheme) => void;
+  onBannerMode2: (theme: BannerTheme) => void;
   bannerError: string | null;
   bannerError1: string | null;
+  bannerError2: string | null;
 }
 
 
@@ -82,8 +85,10 @@ const SidePanel = ({
   onMonthlyTP,
   onBannerMode,
   onBannerMode1,
+  onBannerMode2,
   bannerError,
   bannerError1,
+  bannerError2,
 }: SidePanelProps) => {
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 w-full">
@@ -99,7 +104,7 @@ const SidePanel = ({
        
 
         {/* WA Poster Buttons */}
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="flex flex-col gap-1">
             <button
               onClick={() => onBannerMode("blue")}
@@ -108,7 +113,7 @@ const SidePanel = ({
                          shadow hover:shadow-md active:scale-[0.98]
                          transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
             >
-              🖼️ WA Poster – Blue
+              🖼️ Banner 1
             </button>
             {bannerError && (
               <p className="text-xs text-red-500 text-center px-1">{bannerError}</p>
@@ -123,10 +128,25 @@ const SidePanel = ({
                          shadow hover:shadow-md active:scale-[0.98]
                          transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
             >
-              🖼️ WA Poster – Green
+              🖼️ Banner 2
             </button>
             {bannerError1 && (
               <p className="text-xs text-red-500 text-center px-1">{bannerError1}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <button
+              onClick={() => onBannerMode2("green")}
+              className="rounded-xl bg-gradient-to-r from-amber-600 to-yellow-700
+                         text-white py-2.5 text-sm font-semibold
+                         shadow hover:shadow-md active:scale-[0.98]
+                         transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              🖼️ Banner 3
+            </button>
+            {bannerError2 && (
+              <p className="text-xs text-red-500 text-center px-1">{bannerError2}</p>
             )}
           </div>
         </div>
@@ -164,8 +184,11 @@ const CalendarApp = () => {
   const [bannerMode, setBannerMode] = useState<BannerTheme | null>(null);
   const [openBanner1, setOpenBanner1] = useState(false);
   const [bannerMode1, setBannerMode1] = useState<BannerTheme | null>(null);
+  const [openBanner2, setOpenBanner2] = useState(false);
+  const [bannerMode2, setBannerMode2] = useState<BannerTheme | null>(null);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [bannerError1, setBannerError1] = useState<string | null>(null);
+  const [bannerError2, setBannerError2] = useState<string | null>(null);
 
   // Delete states
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -378,6 +401,20 @@ const events: EventInput[] = useMemo(() => {
     [activeTpForBanner]
   );
 
+  const openBannerModal2 = useCallback(
+    (theme: BannerTheme) => {
+      setBannerError2(null);
+      if (!activeTpForBanner) {
+        setBannerError2("ಆಯ್ದ ದಿನಾಂಕಕ್ಕೆ ಯಾವುದೇ ಟೂರ್ ಪ್ರೋಗ್ರಾಂ ಇಲ್ಲ");
+        return;
+      }
+      setSelectedTp(activeTpForBanner);
+      setBannerMode2(theme);
+      setOpenBanner2(true);
+    },
+    [activeTpForBanner]
+  );
+
   const closeBannerModal = useCallback(() => {
     setOpenBanner(false);
     setBannerMode(null);
@@ -386,6 +423,11 @@ const events: EventInput[] = useMemo(() => {
   const closeBannerModal1 = useCallback(() => {
     setOpenBanner1(false);
     setBannerMode1(null);
+  }, []);
+
+  const closeBannerModal2 = useCallback(() => {
+    setOpenBanner2(false);
+    setBannerMode2(null);
   }, []);
 
   /* =========================
@@ -457,8 +499,10 @@ const events: EventInput[] = useMemo(() => {
             onMonthlyTP={() => setOpenMonthlyTP(true)}
             onBannerMode={openBannerModal}
             onBannerMode1={openBannerModal1}
+            onBannerMode2={openBannerModal2}
             bannerError={bannerError}
             bannerError1={bannerError1}
+            bannerError2={bannerError2}
           />
 
           {/* No TP Notice */}
@@ -520,6 +564,17 @@ const events: EventInput[] = useMemo(() => {
           tpForDate={selectedTp ? { ...selectedTp, events: selectedTp.events.map(e => ({ ...e, description: e.description ?? "" })) } : null}
           activeDate={formatDate(selectedTp.date)}
           theme={bannerMode1}
+        />
+      )}
+
+      {/* Banner Preview – Design 3 */}
+      {openBanner2 && selectedTp && bannerMode2 && (
+        <BannerPreviewModal2
+          open={openBanner2}
+          onClose={closeBannerModal2}
+          tpForDate={selectedTp ? { ...selectedTp, events: selectedTp.events.map(e => ({ ...e, description: e.description ?? "" })) } : null}
+          activeDate={formatDate(selectedTp.date)}
+          theme={bannerMode2}
         />
       )}
 

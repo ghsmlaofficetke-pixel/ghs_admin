@@ -31,8 +31,15 @@ export default function WardIndex() {
 
   const [editOpen,setEditOpen] = useState(false);
   const [editData,setEditData] = useState<any>(null);
-
   const [activeTab,setActiveTab] = useState<"manavi"|"works">("manavi");
+
+  const handleBack = () => {
+    if (id) {
+      navigate(`/apps/panchayath/${panchayath}`);
+    } else {
+      navigate(-1);
+    }
+  };
 
   /* ================= PANCHAYATH MAP ================= */
 
@@ -118,12 +125,14 @@ export default function WardIndex() {
   {/* LEFT - BACK BUTTON */}
 
   <button
-    onClick={() => navigate(-1)}
-    className="flex items-center justify-center 
-    w-8 h-8 rounded-full bg-gradient-to-r 
-    from-[#2466d1] to-cyan-500 text-white shadow"
+    onClick={handleBack}
+    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+    bg-gradient-to-r from-[#2466d1] to-cyan-500
+    text-white text-xs font-semibold shadow
+    hover:opacity-90 active:scale-95 transition flex-shrink-0"
   >
-    <FaArrowLeft size={14} />
+    <FaArrowLeft size={11} />
+    <span>{id ? "ವಾರ್ಡ್ ಪಟ್ಟಿ" : "ಹಿಂದೆ"}</span>
   </button>
 
   {/* CENTER - TITLE */}

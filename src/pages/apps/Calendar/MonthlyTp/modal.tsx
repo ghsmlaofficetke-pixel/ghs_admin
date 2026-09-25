@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { tpSelector } from "../../../../api/tp";
 import MonthlyTPPreview from "./MonthlyTPPreview";
-import { getMonthlyTP } from "./useMonthlyTP";
+import { getMonthlyTP, buildDisplayRange } from "./useMonthlyTP";
 import { exportPDF, exportExcel, formatDate, formatWeekdayKannada } from "./tpExport";
 import { ModalLayout } from "../../../../components/HeadlessUI";
 import type { ViewMode } from "./tpExport";
@@ -42,17 +42,27 @@ const MonthlyTPModal = ({ open, onClose }: Props) => {
     [monthlyData]
   );
 
-  // Filtered display data
+  // Filtered display data — every date in the selected range gets a row;
+  // dates without data become an empty (dashed) row. Same result feeds
+  // the Preview, PDF and Excel export, so all three always match and
+  // nothing that already had data is ever dropped.
   const displayData = useMemo(() => {
-    if (viewMode === "daily" && selectedDay)
-      return monthlyData.filter((tp) => tp.date === selectedDay);
-
-    if (viewMode === "weekly" && fromDate && toDate) {
-      return monthlyData.filter((tp) => tp.date >= fromDate && tp.date <= toDate);
+    if (viewMode === "daily" && selectedDay) {
+      const filtered = monthlyData.filter((tp) => tp.date === selectedDay);
+      const d = new Date(selectedDay);
+      return buildDisplayRange(filtered, d, d);
     }
 
-    return monthlyData;
-  }, [viewMode, selectedDay, fromDate, toDate, monthlyData]);
+    if (viewMode === "weekly" && fromDate && toDate) {
+      const filtered = monthlyData.filter((tp) => tp.date >= fromDate && tp.date <= toDate);
+      return buildDisplayRange(filtered, new Date(fromDate), new Date(toDate));
+    }
+
+    // monthly (also the fallback for daily/weekly before a date is picked)
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0);
+    return buildDisplayRange(monthlyData, monthStart, monthEnd);
+  }, [viewMode, selectedDay, fromDate, toDate, monthlyData, month, year]);
 
   const filterLabel = useMemo(() => {
     if (viewMode === "daily" && selectedDay)

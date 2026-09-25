@@ -213,7 +213,7 @@ export default function TarikereTownPanchayath() {
         setSelectedGP(state.gp);
         dispatch(fetchGPVillages(state.gp));
       }
-    } else {
+    } else if (!selectedHobli) {
       // Fresh load: auto-select first hobli → GP list will show
       const firstId = hoblis[0]._id;
       pgHobli.current = firstId;
@@ -257,14 +257,28 @@ export default function TarikereTownPanchayath() {
   }, [selectedGP, dispatch]);
 
   /* ─────────────────────────────────────────────────────────────────
-     SAFETY NET — returned to list route with selectedGP but empty villages
-     (Redux was cleared while on village detail route)
+     BACK-NAV RESTORE — when returning from village detail (level 3 → 2)
+     location.state has hobli+gp, but initDoneForTaluk guard blocks STEP 2.
+     This effect handles that case separately.
   ───────────────────────────────────────────────────────────────── */
   useEffect(() => {
-    if (!id && selectedGP && villages.length === 0) {
-      dispatch(fetchGPVillages(selectedGP));
+    if (id) return; // only on list route
+    const state: any = location.state;
+    if (!state?.hobli || !hoblis.length) return;
+    // If hobli is already selected correctly, skip
+    if (selectedHobli === state.hobli && (!state.gp || selectedGP === state.gp)) return;
+
+    if (state.hobli && selectedHobli !== state.hobli) {
+      pgHobli.current = state.hobli;
+      setSelectedHobli(state.hobli);
+      dispatch(fetchGramaPanchayaths(state.hobli));
     }
-  }, [id]); // only re-run when route changes (id appears / disappears)
+    if (state.gp && selectedGP !== state.gp) {
+      pgGP.current = state.gp;
+      setSelectedGP(state.gp);
+      dispatch(fetchGPVillages(state.gp));
+    }
+  }, [id, location.state]); // runs when navigating back (id disappears)
 
   /* ================= FILTER LOGIC ================= */
 
@@ -300,9 +314,21 @@ export default function TarikereTownPanchayath() {
 
   const handleSave = (data: any) => {
     if (editType === "gp") {
-      dispatch(updateGramaPanchayath(data._id, { ...data, hobliId: selectedHobli }) as any);
+      const hobliId = data.hobliId || selectedHobli;
+      dispatch(updateGramaPanchayath(data._id, { ...data, hobliId }) as any);
     } else {
-      dispatch(updateVillage(data._id, { ...data, gpId: selectedGP }) as any);
+      const payload = {
+        name: data.name,
+        contactPersons: data.contactPersons,
+      };
+      const rawGP = data.gramPanchayati;
+      const gpId = (rawGP && typeof rawGP === "object" ? rawGP._id : rawGP) || data.gpId || selectedGP;
+      dispatch(updateVillage(data._id, payload as any, gpId || undefined) as any);
+      if (search.length >= 2) {
+        setResults(prev => prev.map(v =>
+          v._id === data._id ? { ...v, name: data.name, contactPersons: data.contactPersons } : v
+        ));
+      }
     }
     setEditOpen(false);
   };
@@ -345,25 +371,22 @@ const handleSearch = async (value: string) => {
   /* ================= BACK BUTTON HANDLER ================= */
 
   const handleBack = () => {
+    // search active ಆಗಿದ್ದರೆ ಮೊದಲು search clear ಮಾಡು
+    if (search.length >= 2) {
+      clearSearch();
+      return;
+    }
     if (level === 3) {
-      const locState: any = location.state;
       navigate(`/apps/taluk/${taluk}`, {
-        state: {
-          hobli: locState?.hobli || selectedHobli,
-          gp:    locState?.gp    || selectedGP,
-        },
+        state: { hobli: selectedHobli, gp: selectedGP },
       });
     } else if (level === 2) {
-      // Village list → GP list (keep hobli)
       pgGP.current = "__clearing__";
       setSelectedGP("");
       dispatch(clearVillageState());
       setSearchText("");
     } else if (level === 1) {
-      // GP list → dropdown only (clear hobli)
-      pgHobli.current = "__clearing__";
-      pgGP.current    = "__clearing__";
-      setSelectedHobli("");
+      pgGP.current = "__clearing__";
       setSelectedGP("");
       setSearchText("");
     }
@@ -372,40 +395,51 @@ const handleSearch = async (value: string) => {
   /* ================= BREADCRUMB ================= */
 
   const BreadcrumbSub = () => {
-    if (level === 0 || level === 3) return null;
+    if (level === 0) return null;
     const hobliName = hoblis.find((h) => h._id === selectedHobli)?.name || "";
     const gpName    = gramaPanchayaths.find((g: any) => g._id === selectedGP)?.name || "";
     return (
       <p className="text-xs text-gray-400 leading-none mt-0.5 truncate">
         {level === 1 && `${hobliName} › ಗ್ರಾಮ ಪಂಚಾಯತ್ ಪಟ್ಟಿ`}
         {level === 2 && `${hobliName} › ${gpName} › ಗ್ರಾಮಗಳ ಪಟ್ಟಿ`}
+        {level === 3 && `${hobliName} › ${gpName} › ಗ್ರಾಮ ವಿವರ`}
       </p>
     );
   };
 
   /* ================= VILLAGE CARD ================= */
 
-  const VillageCard = ({ v }: { v: any }) => (
+  const VillageCard = ({ v }: { v: any }) => {
+    const cardGpId = v.gpId || (v.gramPanchayati && typeof v.gramPanchayati === "object" ? v.gramPanchayati._id : v.gramPanchayati) || selectedGP;
+    const gpName = v.gp?.name || (v.gramPanchayati && typeof v.gramPanchayati === "object" ? v.gramPanchayati.name : "") || "";
+    const cardHobliId = v.hobliId || (v.hobli && typeof v.hobli === "object" ? v.hobli._id : v.hobli) || selectedHobli;
+    return (
     <div
-      onClick={() =>
-        navigate(`/apps/${taluk}/village/${v._id}`, {
-          state: { hobli: selectedHobli, gp: selectedGP },
-        })
-      }
+      onClick={() => {
+        clearSearch();
+        navigate(`/apps/taluk/${taluk}/village/${v._id}`, {
+          state: { hobli: cardHobliId, gp: cardGpId },
+        });
+      }}
       className="bg-white dark:bg-[#1f2a38] border border-gray-200 dark:border-gray-700
-        rounded-xl p-3 sm:p-4 cursor-pointer
-        hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+        rounded-xl p-3 sm:p-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5
+        transition-all duration-200"
     >
       <div className="flex items-center gap-2">
-        <div className="font-bold text-sm sm:text-base flex-1 min-w-0
-          bg-gradient-to-r from-[#2466d1] to-cyan-500 bg-clip-text text-transparent truncate">
-          {v.name}
+        <div className="min-w-0 flex-1">
+          <div className="font-bold text-sm sm:text-base
+            bg-gradient-to-r from-[#2466d1] to-cyan-500 bg-clip-text text-transparent truncate">
+            {v.name}
+          </div>
+          {gpName && (
+            <div className="text-xs text-gray-400 mt-0.5">ಗ್ರಾ..ಪಂ: {gpName}</div>
+          )}
         </div>
         <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full whitespace-nowrap border border-blue-100">
           ಮನವಿ / ಕೆಲಸ
         </span>
         <button
-          onClick={(e) => { e.stopPropagation(); setEditType("village"); setEditData(v); setEditOpen(true); }}
+          onClick={(e) => { e.stopPropagation(); setEditType("village"); setEditData({ ...v, gpId: cardGpId }); setEditOpen(true); }}
           className="text-xs bg-gradient-to-r from-[#2466d1] to-cyan-500
             text-white px-2.5 py-1 rounded-full shadow flex-shrink-0"
         >
@@ -426,40 +460,69 @@ const handleSearch = async (value: string) => {
         )}
       </div>
 
-      <div className={`overflow-hidden transition-all duration-300
-        ${openVillage === v._id ? "max-h-[500px] mt-2" : "max-h-0"}`}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+      {openVillage === v._id && (
+        <div className="mt-2">
           {v?.contactPersons?.length ? (
-            v.contactPersons.map((c: any, idx: number) => (
-              <div key={idx}
-                className="flex items-center justify-between gap-2
-                  bg-gray-50 dark:bg-[#16202b] border border-gray-100 dark:border-gray-700
-                  rounded-lg px-3 py-2">
-                <div className="font-medium text-sm text-gray-800 dark:text-white truncate">
-                  👤 {c?.name}
-                </div>
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  {c?.phones?.length ? (
-                    c.phones.map((phone: string, pIdx: number) => (
-                      <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-blue-600 text-xs font-medium hover:text-blue-800 whitespace-nowrap">
-                        📞 {phone?.trim()}
-                      </a>
-                    ))
-                  ) : (
-                    <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
-                  )}
-                </div>
+            <>
+              {/* Mobile: scrollable list */}
+              <div className="sm:hidden max-h-52 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                {v.contactPersons.map((c: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 dark:bg-[#16202b] hover:bg-blue-50 dark:hover:bg-[#1a2535] transition-colors">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#2466d1] to-cyan-500 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">{idx + 1}</span>
+                      <span className="font-medium text-sm text-gray-800 dark:text-white truncate">{c?.name}</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5 flex-shrink-0 items-end">
+                      {c?.phones?.length ? (
+                        c.phones.map((phone: string, pIdx: number) => (
+                          <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1 text-blue-600 text-xs font-semibold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200 transition-colors">
+                            📞 {phone?.trim()}
+                          </a>
+                        ))
+                      ) : (
+                        <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))
+              {/* Desktop: 3-column grid */}
+              <div className="hidden sm:grid grid-cols-3 gap-2 pt-1">
+                {v.contactPersons.map((c: any, idx: number) => (
+                  <div key={idx}
+                    className="flex items-center justify-between gap-2
+                      bg-gray-50 dark:bg-[#16202b] border border-gray-100 dark:border-gray-700
+                      rounded-lg px-3 py-2">
+                    <div className="font-medium text-sm text-gray-800 dark:text-white truncate">
+                      👤 {c?.name}
+                    </div>
+                    <div className="flex flex-col gap-0.5 flex-shrink-0">
+                      {c?.phones?.length ? (
+                        c.phones.map((phone: string, pIdx: number) => (
+                          <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 text-xs font-medium hover:text-blue-800 whitespace-nowrap">
+                            📞 {phone?.trim()}
+                          </a>
+                        ))
+                      ) : (
+                        <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
-            <div className="text-gray-400 text-sm col-span-full">ಸಂಪರ್ಕ ಮಾಹಿತಿ ಇಲ್ಲ</div>
+            <div className="text-gray-400 text-sm py-2">ಸಂಪರ್ಕ ಮಾಹಿತಿ ಇಲ್ಲ</div>
           )}
         </div>
-      </div>
+      )}
     </div>
-  );
+    );
+  };
 
   /* ================= RENDER ================= */
 
@@ -470,15 +533,18 @@ const handleSearch = async (value: string) => {
       <div className="sticky top-0 z-20 bg-white dark:bg-[#1f2a38] shadow-sm">
 
         <div className="flex items-center gap-2 px-3 py-2.5">
-          {/* BACK — visible at levels 1, 2, 3 */}
-          {level >= 1 && (
+          {/* BACK — visible at levels 1, 2, 3 OR when search active */}
+          {(level >= 1 || search.length >= 2) && (
             <button
               onClick={handleBack}
-              className="flex-shrink-0 w-8 h-8 flex items-center justify-center
-                rounded-full bg-gradient-to-r from-[#2466d1] to-cyan-500
-                text-white shadow hover:scale-105 active:scale-95 transition"
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5
+                rounded-lg bg-gradient-to-r from-[#2466d1] to-cyan-500
+                text-white text-xs font-semibold shadow hover:opacity-90 active:scale-95 transition"
             >
-              <FaArrowLeft size={13} />
+              <FaArrowLeft size={11} />
+              <span>
+                {search.length >= 2 ? "ಹಿಂದೆ" : level === 3 ? "ಗ್ರಾಮ ಪಟ್ಟಿ" : level === 2 ? "GP ಪಟ್ಟಿ" : "ಹಿಂದೆ"}
+              </span>
             </button>
           )}
 
@@ -574,7 +640,10 @@ const handleSearch = async (value: string) => {
                 <p className="text-xs text-gray-400 px-1 pt-1">
                   "{search}" — {results.length} ಫಲಿತಾಂಶಗಳು
                 </p>
-                {results.map((v: any) => <VillageCard key={v._id} v={v} />)}
+                {results.map((v: any) => {
+                  const gpId = v.gramPanchayati?._id || v.gramPanchayati || v.gpId || "";
+                  return <VillageCard key={v._id} v={{ ...v, gpId }} />;
+                })}
               </>
             ) : (
               <div className="text-center py-10 text-gray-400 text-sm">
@@ -641,38 +710,66 @@ const handleSearch = async (value: string) => {
                       )}
                     </div>
 
-                    <div className={`overflow-hidden transition-all duration-300
-                      ${openGP === gp._id ? "max-h-[400px] mt-2" : "max-h-0"}`}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                    {openGP === gp._id && (
+                      <div className="mt-2">
                         {gp?.pdo?.length ? (
-                          gp.pdo.map((p: any, idx: number) => (
-                            <div key={idx}
-                              className="flex items-center justify-between gap-2
-                                bg-gray-50 dark:bg-[#16202b] border border-gray-100 dark:border-gray-700
-                                rounded-lg px-3 py-2">
-                              <div className="font-medium text-sm text-gray-800 dark:text-white truncate">
-                                👤 {p?.name}
-                              </div>
-                              <div className="flex flex-col gap-0.5 flex-shrink-0">
-                                {p.phones?.length ? (
-                                  p.phones.map((phone: string, pIdx: number) => (
-                                    <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="text-blue-600 text-xs font-medium hover:text-blue-800 whitespace-nowrap">
-                                      📞 {phone.trim()}
-                                    </a>
-                                  ))
-                                ) : (
-                                  <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
-                                )}
-                              </div>
+                          <>
+                            {/* Mobile: scrollable list */}
+                            <div className="sm:hidden max-h-52 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+                              {gp.pdo.map((p: any, idx: number) => (
+                                <div key={idx} className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 dark:bg-[#16202b] hover:bg-blue-50 dark:hover:bg-[#1a2535] transition-colors">
+                                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                                    <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#2466d1] to-cyan-500 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">{idx + 1}</span>
+                                    <span className="font-medium text-sm text-gray-800 dark:text-white truncate">{p?.name}</span>
+                                  </div>
+                                  <div className="flex flex-col gap-0.5 flex-shrink-0 items-end">
+                                    {p.phones?.length ? (
+                                      p.phones.map((phone: string, pIdx: number) => (
+                                        <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
+                                          onClick={(e) => e.stopPropagation()}
+                                          className="flex items-center gap-1 text-blue-600 text-xs font-semibold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200 transition-colors">
+                                          📞 {phone.trim()}
+                                        </a>
+                                      ))
+                                    ) : (
+                                      <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))
+                            {/* Desktop: 3-column grid */}
+                            <div className="hidden sm:grid grid-cols-3 gap-2 pt-1">
+                              {gp.pdo.map((p: any, idx: number) => (
+                                <div key={idx}
+                                  className="flex items-center justify-between gap-2
+                                    bg-gray-50 dark:bg-[#16202b] border border-gray-100 dark:border-gray-700
+                                    rounded-lg px-3 py-2">
+                                  <div className="font-medium text-sm text-gray-800 dark:text-white truncate">
+                                    👤 {p?.name}
+                                  </div>
+                                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                                    {p.phones?.length ? (
+                                      p.phones.map((phone: string, pIdx: number) => (
+                                        <a key={pIdx} href={`tel:${phone.replace(/\s+/g, "")}`}
+                                          onClick={(e) => e.stopPropagation()}
+                                          className="text-blue-600 text-xs font-medium hover:text-blue-800 whitespace-nowrap">
+                                          📞 {phone.trim()}
+                                        </a>
+                                      ))
+                                    ) : (
+                                      <span className="text-gray-400 text-xs">ಫೋನ್ ಇಲ್ಲ</span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
                         ) : (
-                          <div className="text-gray-400 text-sm">PDO ಮಾಹಿತಿ ಇಲ್ಲ</div>
+                          <div className="text-gray-400 text-sm py-2">PDO ಮಾಹಿತಿ ಇಲ್ಲ</div>
                         )}
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
                 {filteredGPs.length === 0 && (

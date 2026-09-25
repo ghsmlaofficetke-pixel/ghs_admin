@@ -1,205 +1,205 @@
 
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../../../redux/store";
+// import { useEffect, useState } from "react";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../../../../../redux/store";
 
-import {
-  createWardIndWork,
-  updateWardIndWork,
-} from "../../../../../api/wardindwork";
+// import {
+//   createWardIndWork,
+//   updateWardIndWork,
+// } from "../../../../../api/wardindwork";
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  wardId: string;
-  editData?: any | null;
-}
+// interface Props {
+//   open: boolean;
+//   onClose: () => void;
+//   wardId: string;
+//   editData?: any | null;
+// }
 
-const initialState = {
-  name: "",
-  mobile: "",
-  address: "",
-  scheme: "",
-  orderNumber: "",
-};
+// const initialState = {
+//   name: "",
+//   mobile: "",
+//   address: "",
+//   scheme: "",
+//   orderNumber: "",
+// };
 
-export default function AddEditWardIndModal({
-  open,
-  onClose,
-  wardId,
-  editData,
-}: Props) {
+// export default function AddEditWardIndModal({
+//   open,
+//   onClose,
+//   wardId,
+//   editData,
+// }: Props) {
 
-  const dispatch = useDispatch<AppDispatch>();
-  const [form, setForm] = useState(initialState);
+//   const dispatch = useDispatch<AppDispatch>();
+//   const [form, setForm] = useState(initialState);
 
-  /* =========================
-     Load Edit Data
-  ========================= */
+//   /* =========================
+//      Load Edit Data
+//   ========================= */
 
-  useEffect(() => {
+//   useEffect(() => {
 
-    if (editData) {
+//     if (editData) {
 
-      setForm({
-        name: editData.name || "",
-        mobile: editData.mobile || "",
-        address: editData.address || "",
-        scheme: editData.scheme || "",
-        orderNumber: editData.orderNumber || "",
-      });
+//       setForm({
+//         name: editData.name || "",
+//         mobile: editData.mobile || "",
+//         address: editData.address || "",
+//         scheme: editData.scheme || "",
+//         orderNumber: editData.orderNumber || "",
+//       });
 
-    } else {
+//     } else {
 
-      setForm(initialState);
+//       setForm(initialState);
 
-    }
+//     }
 
-  }, [editData, open]);
+//   }, [editData, open]);
 
-  /* =========================
-     Input Change
-  ========================= */
+//   /* =========================
+//      Input Change
+//   ========================= */
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+//   const handleChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+//   ) => {
 
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+//     setForm({
+//       ...form,
+//       [e.target.name]: e.target.value,
+//     });
 
-  };
+//   };
 
-  /* =========================
-     Submit
-  ========================= */
+//   /* =========================
+//      Submit
+//   ========================= */
 
-  const handleSubmit = () => {
+//   const handleSubmit = () => {
 
-    if (!form.name || !form.scheme) {
-      alert("ಹೆಸರು ಮತ್ತು ಯೋಜನೆ ಕಡ್ಡಾಯ");
-      return;
-    }
+//     if (!form.name || !form.scheme) {
+//       alert("ಹೆಸರು ಮತ್ತು ಯೋಜನೆ ಕಡ್ಡಾಯ");
+//       return;
+//     }
 
-    const payload = {
-      ...form,
-      ward: wardId,
-    };
+//     const payload = {
+//       ...form,
+//       ward: wardId,
+//     };
 
-    if (editData?._id) {
-      dispatch(updateWardIndWork(editData._id, payload));
-    } else {
-      dispatch(createWardIndWork(payload));
-    }
+//     if (editData?._id) {
+//       dispatch(updateWardIndWork(editData._id, payload));
+//     } else {
+//       dispatch(createWardIndWork(payload));
+//     }
 
-    onClose();
-  };
+//     onClose();
+//   };
 
-  if (!open) return null;
+//   if (!open) return null;
 
-  return (
+//   return (
 
-    <div
-  className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-3"
-  onClick={onClose}
->
-  <div
-    className="bg-white w-full max-w-xl rounded-2xl shadow-xl p-6"
-    onClick={(e) => e.stopPropagation()}
-  >
+//     <div
+//   className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-3"
+//   onClick={onClose}
+// >
+//   <div
+//     className="bg-white w-full max-w-xl rounded-2xl shadow-xl p-6"
+//     onClick={(e) => e.stopPropagation()}
+//   >
 
-    {/* ===== HEADER ===== */}
-    <div className="flex justify-between items-center border-b pb-2 mb-4">
-      <h2 className="text-base sm:text-lg font-semibold text-gray-800">
-        {editData
-          ? "ವಾರ್ಡ್ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಯ ವಿವರ ಸಂಪಾದನೆ"
-          : "ವಾರ್ಡ್ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಯ ವಿವರ ಸೇರಿಸಿ"}
-      </h2>
+//     {/* ===== HEADER ===== */}
+//     <div className="flex justify-between items-center border-b pb-2 mb-4">
+//       <h2 className="text-base sm:text-lg font-semibold text-gray-800">
+//         {editData
+//           ? "ವಾರ್ಡ್ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಯ ವಿವರ ಸಂಪಾದನೆ"
+//           : "ವಾರ್ಡ್ ವೈಯಕ್ತಿಕ ಫಲಾನುಭವಿಯ ವಿವರ ಸೇರಿಸಿ"}
+//       </h2>
 
-      <button
-        onClick={onClose}
-        className="text-lg font-semibold text-gray-500 hover:text-black"
-      >
-        ×
-      </button>
-    </div>
+//       <button
+//         onClick={onClose}
+//         className="text-lg font-semibold text-gray-500 hover:text-black"
+//       >
+//         ×
+//       </button>
+//     </div>
 
-    {/* ===== FORM ===== */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+//     {/* ===== FORM ===== */}
+//     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
 
-      {/* NAME */}
-      <input
-        name="name"
-        placeholder="ಹೆಸರು"
-        value={form.name}
-        onChange={handleChange}
-        className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-      />
+//       {/* NAME */}
+//       <input
+//         name="name"
+//         placeholder="ಹೆಸರು"
+//         value={form.name}
+//         onChange={handleChange}
+//         className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+//       />
 
-      {/* MOBILE */}
-      <input
-        name="mobile"
-        placeholder="ಮೊಬೈಲ್ ನಂಬರ್"
-        value={form.mobile}
-        onChange={handleChange}
-        className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-      />
+//       {/* MOBILE */}
+//       <input
+//         name="mobile"
+//         placeholder="ಮೊಬೈಲ್ ನಂಬರ್"
+//         value={form.mobile}
+//         onChange={handleChange}
+//         className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+//       />
 
-      {/* SCHEME */}
-      <input
-        name="scheme"
-        placeholder="ಯೋಜನೆ"
-        value={form.scheme}
-        onChange={handleChange}
-        className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-      />
+//       {/* SCHEME */}
+//       <input
+//         name="scheme"
+//         placeholder="ಯೋಜನೆ"
+//         value={form.scheme}
+//         onChange={handleChange}
+//         className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+//       />
 
-      {/* ORDER NUMBER */}
-      <input
-        name="orderNumber"
-        placeholder="ಆದೇಶ ಸಂಖ್ಯೆ"
-        value={form.orderNumber}
-        onChange={handleChange}
-        className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-      />
+//       {/* ORDER NUMBER */}
+//       <input
+//         name="orderNumber"
+//         placeholder="ಆದೇಶ ಸಂಖ್ಯೆ"
+//         value={form.orderNumber}
+//         onChange={handleChange}
+//         className="border border-slate-300 p-2 rounded text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+//       />
 
-      {/* ADDRESS FULL */}
-      <textarea
-        name="address"
-        placeholder="ವಿಳಾಸ"
-        value={form.address}
-        onChange={handleChange}
-        className="border border-slate-300 p-2 rounded text-sm col-span-full focus:ring-2 focus:ring-blue-100 outline-none"
-        rows={3}
-      />
+//       {/* ADDRESS FULL */}
+//       <textarea
+//         name="address"
+//         placeholder="ವಿಳಾಸ"
+//         value={form.address}
+//         onChange={handleChange}
+//         className="border border-slate-300 p-2 rounded text-sm col-span-full focus:ring-2 focus:ring-blue-100 outline-none"
+//         rows={3}
+//       />
 
-    </div>
+//     </div>
 
-    {/* ===== FOOTER ===== */}
-    <div className="flex justify-end gap-2 mt-5 pt-3 border-t">
+//     {/* ===== FOOTER ===== */}
+//     <div className="flex justify-end gap-2 mt-5 pt-3 border-t">
 
-      <button
-        onClick={onClose}
-        className="px-4 py-2 text-sm border rounded hover:bg-gray-100"
-      >
-        Cancel
-      </button>
+//       <button
+//         onClick={onClose}
+//         className="px-4 py-2 text-sm border rounded hover:bg-gray-100"
+//       >
+//         Cancel
+//       </button>
 
-      <button
-        onClick={handleSubmit}
-        className="px-5 py-2 text-sm rounded text-white bg-gradient-to-r from-[#2466d1] to-cyan-500 hover:scale-105 transition"
-      >
-        {editData ? "Update" : "Save"}
-      </button>
+//       <button
+//         onClick={handleSubmit}
+//         className="px-5 py-2 text-sm rounded text-white bg-gradient-to-r from-[#2466d1] to-cyan-500 hover:scale-105 transition"
+//       >
+//         {editData ? "Update" : "Save"}
+//       </button>
 
-    </div>
+//     </div>
 
-  </div>
-</div>
+//   </div>
+// </div>
 
-  );
+//   );
 
-}
+// }
 

@@ -15,7 +15,7 @@ export default function WardWorks() {
 
   return (
 
-    <div className="flex flex-col h-[calc(100vh-250px)] bg-white rounded-lg overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-130px)] bg-white rounded-lg overflow-hidden">
 
       {/* TOGGLE */}
 

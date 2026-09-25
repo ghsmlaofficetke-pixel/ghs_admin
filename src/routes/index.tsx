@@ -33,6 +33,13 @@ const GovtOfficeApp = React.lazy(() => import("../pages/apps/GovtOffice/index"))
 const GOVTLinksApp = React.lazy(() => import("../pages/apps/GovtLinks/index"));
 const VoiceQueryPage = React.lazy(() => import("../pages/apps/VoiceQuery/VoiceQueryPage"));
 const ContactsPage = React.lazy(() => import("../pages/apps/Contacts/VillageContacts"));
+const UserManagementPage = React.lazy(() => import("../pages/apps/Admin/UserManagement"));
+const VillageManagement = React.lazy(() => import("../pages/apps/Admin/Villagemanagement"));
+const ElectionManagement = React.lazy(() => import("../pages/apps/Election/index"));
+const BlaBloManagement = React.lazy(() => import("../pages/apps/Election/BlaBloList"));
+const YuvaSanghaPage = React.lazy(() => import("../pages/apps/YuvaSangha/index"));
+const GaurantiSamitiPage = React.lazy(() => import("../pages/apps/GaurantiSamiti/index"));
+const BulkSamparkaPage = React.lazy(() => import("../pages/apps/BulkSamparka/index"));
 
 
 
@@ -62,12 +69,12 @@ export interface RoutesProps {
   exact?: boolean;
   icon?: string;
   header?: string;
+  layout?: string; 
   roles?: string[];
   children?: RoutesProps[];
 }
 
 /* ================= DASHBOARD ================= */
-
 const dashboardRoutes: RoutesProps = {
   path: "/home",
   name: "Dashboards",
@@ -107,7 +114,7 @@ const calendarAppRoutes: RoutesProps = {
 /* ---------- TALUK ROUTES ---------- */
 
 const talukVillageRoutes: RoutesProps = {
-  path: "/apps/:taluk/village/:id",
+  path: "/apps/taluk/:taluk/village/:id",
   name: "TalukVillage",
   route: PrivateRoute,
   layout: "vertical",
@@ -245,6 +252,49 @@ const contactsAppRoutes: RoutesProps = {
   header: "Apps",
 };
 
+const userManagementRoute: RoutesProps = {
+  path: "/admin/users",
+  name: "User Management",
+  layout: "vertical",
+  roles: ["Admin", "SuperAdmin"],
+  element: <UserManagementPage />,
+  route: PrivateRoute,
+  header: "Admin",
+};
+
+
+const villageManagementRoute: RoutesProps = {
+  path: "/admin/villages",
+  name: "Village Management",
+  layout: "vertical",
+  roles: ["Admin", "SuperAdmin"],
+  element: <VillageManagement />,
+  route: PrivateRoute,
+  header: "Admin",
+};
+
+
+const ellectionManagementRoute: RoutesProps = {
+  path: "/admin/elections",
+  name: "Election Management",
+  layout: "vertical",
+  roles: ["Admin", "SuperAdmin"],
+  element: <ElectionManagement />,
+  route: PrivateRoute,
+  header: "Admin",
+};
+
+
+const blabloManagementRoute: RoutesProps = {
+  path: "/admin/bla-blo-list",
+  name: "BLA/BLO",
+  layout: "vertical",
+  roles: ["Admin", "SuperAdmin"],
+  element: <BlaBloManagement />,
+  route: PrivateRoute,
+  header: "Admin",
+};
+
 /* ================= ROUTE ORDER ================= */
 
 const appRoutes = [
@@ -267,7 +317,36 @@ const appRoutes = [
   schemAppRoutes,
   govtlinksAppRoutes,
   voiceQueryAppRoutes,
-  contactsAppRoutes
+  contactsAppRoutes,
+  userManagementRoute,
+  villageManagementRoute,
+  ellectionManagementRoute,
+  blabloManagementRoute,
+
+  {
+    path: "/apps/yuva-sangha",
+    name: "Yuva Sangha",
+    layout: "vertical",
+    element: <YuvaSanghaPage />,
+    route: PrivateRoute,
+    header: "Apps",
+  },
+  {
+    path: "/apps/gauranthi-samiti",
+    name: "Gauranthi Samiti",
+    layout: "vertical",
+    element: <GaurantiSamitiPage />,
+    route: PrivateRoute,
+    header: "Apps",
+  },
+  {
+    path: "/apps/bulk-samparka",
+    name: "Bulk Samparka",
+    layout: "vertical",
+    element: <BulkSamparkaPage />,
+    route: PrivateRoute,
+    header: "Apps",
+  },
 
 ];
 

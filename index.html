@@ -35,6 +35,13 @@
     <!-- ✅ iOS Safari ನಲ್ಲಿ phone numbers auto-detect ಆಗದಂತೆ -->
     <meta name="format-detection" content="telephone=no"/>
 
+    <!-- ✅ Security: prevent clickjacking in older browsers -->
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN"/>
+    <!-- ✅ Security: XSS protection -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+    <!-- ✅ Security: no referrer leak to external sites -->
+    <meta name="referrer" content="strict-origin-when-cross-origin"/>
+
     <title>GHS MLA Office</title>
 
     <style>
@@ -118,7 +125,7 @@
     <img
         alt="GHS MLA Office Logo"
         class="light"
-        src="/src/assets/images/logo-dark.webp"
+        src="/logo.png"
         style="height: 40%; object-fit: contain;"
     />
 </div>

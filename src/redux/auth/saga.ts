@@ -1,180 +1,87 @@
 import { all, fork, put, takeEvery, call } from "redux-saga/effects";
 import { SagaIterator } from "@redux-saga/core";
-
-// api
 import { APICore } from "../../helpers/api/apiCore";
-
-// api calls
-import {
-  login as loginApi,
-  logout as logoutApi,
-  signup as signupApi,
-  forgotPassword as forgotPasswordApi,
-} from "../../helpers/api/auth";
-
-// actions
+import { adminLogin as adminLoginApi, requestLoginOtp, verifyLoginOtp, logout as logoutApi } from "../../helpers/api/auth";
 import { authApiResponseSuccess, authApiResponseError } from "./actions";
-
-// constants
 import { AuthActionTypes } from "./constants";
-
-interface UserData {
-  payload: {
-    phone_no?: string;
-    password?: string;
-    fullname?: string;
-    email?: string;
-  };
-  type: string;
-}
 
 const api = new APICore();
 
-/* ===============================
-   LOGIN
-================================ */
-function* login({
-  payload: { phone_no, password },
-}: UserData): SagaIterator {
+/* ── Admin/SuperAdmin direct login ── */
+function* adminLogin({ payload: { phone_no, password } }: any): SagaIterator {
   try {
-    const response = yield call(loginApi, { phone_no, password });
-
-    const token =
-      response?.data?.token ||
-      response?.data?.data?.token;
-
-    if (!token) {
-      throw new Error("Invalid phone number or password");
-    }
-
+    const res  = yield call(adminLoginApi, { phone_no, password });
+    const token = res?.data?.data?.token || res?.data?.token;
+    const user  = res?.data?.data?.user  || res?.data?.user;
+    if (!token) throw new Error("Login failed");
     api.setLoggedInUser(token);
-
-    yield put(
-      authApiResponseSuccess(AuthActionTypes.LOGIN_USER, { token })
-    );
+    // Store role info for sidebar
+    localStorage.setItem("userRole", user?.role || "admin");
+    localStorage.setItem("userInfo", JSON.stringify(user));
+    localStorage.setItem("allowedMenus", JSON.stringify(user?.allowedMenus || []));
+    yield put(authApiResponseSuccess(AuthActionTypes.ADMIN_LOGIN, { token, ...user }));
   } catch (error: any) {
-
-    const errorMessage =
-      error ||
-      "Invalid phone number or password";
-
-    api.setLoggedInUser(null);
-
-    yield put(
-      authApiResponseError(
-        AuthActionTypes.LOGIN_USER,
-        errorMessage
-      )
-    );
+    yield put(authApiResponseError(AuthActionTypes.ADMIN_LOGIN,
+      typeof error === "string" ? error : error?.message || "Login failed"));
   }
 }
 
-/* ===============================
-   LOGOUT
-================================ */
+/* ── User step-1: request OTP ── */
+function* login({ payload: { phone_no, password } }: any): SagaIterator {
+  try {
+    const res = yield call(requestLoginOtp, { phone_no, password });
+    const data = res?.data?.data || res?.data;
+    if (data?.skipOtp && data?.token) {
+      // ✅ known device — logged in directly, no OTP screen
+      api.setLoggedInUser(data.token);
+      localStorage.setItem("userRole", data.user?.role || "user");
+      localStorage.setItem("userInfo", JSON.stringify(data.user));
+      localStorage.setItem("allowedMenus", JSON.stringify(data.user?.allowedMenus || []));
+      yield put(authApiResponseSuccess(AuthActionTypes.VERIFY_OTP, { token: data.token, ...data.user }));
+      return;
+    }
+    const msg = res?.data?.message || data?.message;
+    if (!msg) throw new Error("OTP request failed");
+    yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, { phone_no }));
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.LOGIN_USER,
+      typeof error === "string" ? error : error?.message || "Login failed"));
+  }
+}
+
+/* ── User step-2: verify OTP ── */
+function* verifyOtp({ payload: { phone_no, otp } }: any): SagaIterator {
+  try {
+    const res   = yield call(verifyLoginOtp, { phone_no, otp });
+    const token = res?.data?.data?.token || res?.data?.token;
+    const user  = res?.data?.data?.user  || res?.data?.user;
+    if (!token) throw new Error("OTP verification failed");
+    api.setLoggedInUser(token);
+    localStorage.setItem("userRole", user?.role || "user");
+    localStorage.setItem("userInfo", JSON.stringify(user));
+    localStorage.setItem("allowedMenus", JSON.stringify(user?.allowedMenus || []));
+    yield put(authApiResponseSuccess(AuthActionTypes.VERIFY_OTP, { token, ...user }));
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.VERIFY_OTP,
+      typeof error === "string" ? error : error?.message || "Invalid OTP"));
+  }
+}
+
+/* ── Logout ── */
 function* logout(): SagaIterator {
-  try {
-    yield call(logoutApi);
-
-    // ✅ Remove token properly
-    api.setLoggedInUser(null);
-
-    yield put(
-      authApiResponseSuccess(AuthActionTypes.LOGOUT_USER, {})
-    );
-  } catch (error: any) {
-    api.setLoggedInUser(null); // still remove token even if API fails
-
-    yield put(
-      authApiResponseError(
-        AuthActionTypes.LOGOUT_USER,
-        "Logout failed"
-      )
-    );
-  }
+  try { yield call(logoutApi); } catch {}
+  api.setLoggedInUser(null);
+  localStorage.removeItem("userRole");
+  localStorage.removeItem("userInfo");
+  localStorage.removeItem("allowedMenus");
+  yield put(authApiResponseSuccess(AuthActionTypes.LOGOUT_USER, {}));
 }
 
-/* ===============================
-   SIGNUP
-================================ */
-function* signup({
-  payload: { fullname, email, password },
-}: UserData): SagaIterator {
-  try {
-    const response = yield call(signupApi, {
-      fullname,
-      email,
-      password,
-    });
+export function* watchAdminLogin()  { yield takeEvery(AuthActionTypes.ADMIN_LOGIN,  adminLogin); }
+export function* watchLogin()       { yield takeEvery(AuthActionTypes.LOGIN_USER,   login); }
+export function* watchVerifyOtp()   { yield takeEvery(AuthActionTypes.VERIFY_OTP,   verifyOtp); }
+export function* watchLogout()      { yield takeEvery(AuthActionTypes.LOGOUT_USER,  logout); }
 
-    yield put(
-      authApiResponseSuccess(
-        AuthActionTypes.SIGNUP_USER,
-        response.data
-      )
-    );
-  } catch (error: any) {
-    yield put(
-      authApiResponseError(
-        AuthActionTypes.SIGNUP_USER,
-        "Signup failed"
-      )
-    );
-  }
-}
-
-/* ===============================
-   FORGOT PASSWORD
-================================ */
-function* forgotPassword({
-  payload: { phone_no },
-}: UserData): SagaIterator {
-  try {
-    const response = yield call(forgotPasswordApi, { phone_no });
-
-    yield put(
-      authApiResponseSuccess(
-        AuthActionTypes.FORGOT_PASSWORD,
-        response.data
-      )
-    );
-  } catch (error: any) {
-    yield put(
-      authApiResponseError(
-        AuthActionTypes.FORGOT_PASSWORD,
-        "Request failed"
-      )
-    );
-  }
-}
-
-/* ===============================
-   WATCHERS
-================================ */
-export function* watchLoginUser() {
-  yield takeEvery(AuthActionTypes.LOGIN_USER, login);
-}
-
-export function* watchLogout() {
-  yield takeEvery(AuthActionTypes.LOGOUT_USER, logout);
-}
-
-export function* watchSignup() {
-  yield takeEvery(AuthActionTypes.SIGNUP_USER, signup);
-}
-
-export function* watchForgotPassword() {
-  yield takeEvery(AuthActionTypes.FORGOT_PASSWORD, forgotPassword);
-}
-
-/* ===============================
-   ROOT SAGA
-================================ */
 export default function* authSaga() {
-  yield all([
-    fork(watchLoginUser),
-    fork(watchLogout),
-    fork(watchSignup),
-    fork(watchForgotPassword),
-  ]);
+  yield all([fork(watchAdminLogin), fork(watchLogin), fork(watchVerifyOtp), fork(watchLogout)]);
 }

@@ -14,6 +14,7 @@ export interface WardIndWork {
   mobile?: string;
   scheme: string;
   orderNumber?: string;
+  Reference?: string;
   ward: string;
 }
 

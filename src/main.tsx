@@ -1,15 +1,3 @@
-// import React from 'react'
-// import ReactDOM from 'react-dom/client'
-// import { Provider } from 'react-redux'
-// import { BrowserRouter } from 'react-router-dom'
-// import App from './App'
-// import { store } from './redux/store'
-// import { registerSW } from 'virtual:pwa-register'
-
-// ReactDOM.createRoot(document.getElementById('root')!).render(
-//   <Provider store={store}>
-//     <BrowserRouter>
-//       <App />
-//     </BrowserRouter>
-//   </Provider>
-// )
+// Entry point: src/index.tsx (referenced directly in index.html)
+// This file is intentionally unused — do not add code here.
+export {};
